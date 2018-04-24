@@ -40,6 +40,7 @@ namespace OrleansSiloHost
         {
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
+                .AddMemoryGrainStorage("DevStore")
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
                 .AddMemoryGrainStorageAsDefault()

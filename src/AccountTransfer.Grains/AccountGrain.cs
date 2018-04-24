@@ -4,44 +4,46 @@ using Orleans;
 using Orleans.CodeGeneration;
 using Orleans.Transactions.Abstractions;
 using AccountTransfer.Interfaces;
+using Orleans.Providers;
 
-[assembly: GenerateSerializer(typeof(AccountTransfer.Grains.Balance))]
+[assembly: GenerateSerializer(typeof(AccountTransfer.Grains.AccountGrainState))]
 
 namespace AccountTransfer.Grains
 {
     [Serializable]
-    public class Balance
+    public class AccountGrainState
     {
-        public uint Value { get; set; } = 1000;
+        public uint Balance { get; set; }
     }
 
-    public class AccountGrain : Grain, IAccountGrain
+    [StorageProvider(ProviderName="DevStore")]
+    public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
-        private readonly ITransactionalState<Balance> balance;
+        private readonly ITransactionalState<AccountGrainState> transactionalState;
 
         public AccountGrain(
-            [TransactionalState("balance")] ITransactionalState<Balance> balance)
+            [TransactionalState("transactionalState")] ITransactionalState<AccountGrainState> balance)
         {
-            this.balance = balance ?? throw new ArgumentNullException(nameof(balance));
+            this.transactionalState = balance ?? throw new ArgumentNullException(nameof(balance));
         }
 
         Task IAccountGrain.Deposit(uint amount)
         {
-            this.balance.State.Value += amount;
-            this.balance.Save();
+            this.transactionalState.State.Balance += amount;
+            this.transactionalState.Save();
             return Task.CompletedTask;
         }
 
         Task IAccountGrain.Withdraw(uint amount)
         {
-            this.balance.State.Value -= amount;
-            this.balance.Save();
+            this.transactionalState.State.Balance -= amount;
+            this.transactionalState.Save();
             return Task.CompletedTask;
         }
 
         Task<uint> IAccountGrain.GetBalance()
         {
-            return Task.FromResult(this.balance.State.Value);
+            return Task.FromResult(this.transactionalState.State.Balance);
         }
     }
 }
