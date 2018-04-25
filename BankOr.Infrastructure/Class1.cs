@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
@@ -22,6 +23,7 @@ namespace BankOr.Infrastructure
         public string Name { get; }
         public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
+
             throw new NotImplementedException();
         }
 
@@ -35,6 +37,6 @@ namespace BankOr.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Logger Log { get; }
+        public Logger<object> Log { get; }
     }
 }
