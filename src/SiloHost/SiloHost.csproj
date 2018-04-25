@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Orleans.Transactions" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\BankOr.Infrastructure\BankOr.Infrastructure.csproj" />
     <ProjectReference Include="..\AccountTransfer.Grains\AccountTransfer.Grains.csproj" />
     <ProjectReference Include="..\AccountTransfer.Interfaces\AccountTransfer.Interfaces.csproj" />
   </ItemGroup>

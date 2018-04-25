@@ -16,7 +16,7 @@ namespace AccountTransfer.Grains
         public uint Balance { get; set; }
     }
 
-    [StorageProvider(ProviderName="DevStore")]
+    [StorageProvider(ProviderName="BankOrStorageProvider")]
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
         private readonly ITransactionalState<AccountGrainState> transactionalState;
