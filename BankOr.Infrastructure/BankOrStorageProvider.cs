@@ -21,6 +21,7 @@ namespace BankOr.Infrastructure
         }
 
         public string Name { get; }
+
         public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
 
@@ -29,6 +30,7 @@ namespace BankOr.Infrastructure
 
         public Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
+
             throw new NotImplementedException();
         }
 
