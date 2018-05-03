@@ -11,7 +11,8 @@ namespace AccountTransfer.Interfaces
         [Transaction(TransactionOption.Required)]
         Task Deposit(uint amount);
 
-        [Transaction(TransactionOption.Required)]
-        Task<uint> GetBalance();
+        Task<decimal> GetBalance();
+
+        Task Owner(string userId);
     }
 }

@@ -18,10 +18,10 @@ namespace Bank.Api.Controllers
             _clusterClient = clusterClient;
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var accountManager = _clusterClient.GetGrain<IAccontManagerGrain>(0);
+            var accountManager = _clusterClient.GetGrain<IAccountManagerGrain>(0);
 
             var account = await accountManager.GetAccounts();
             return Ok();

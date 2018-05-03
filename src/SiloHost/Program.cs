@@ -7,6 +7,11 @@ using Orleans.Hosting;
 using Orleans.Hosting.Development;
 using Orleans.Configuration;
 using System.Net;
+using BankOr.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Orleans.Runtime;
+using Orleans.Storage;
 
 namespace OrleansSiloHost
 {
@@ -38,12 +43,15 @@ namespace OrleansSiloHost
 
         private static async Task<ISiloHost> StartSilo()
         {
+            var storageProvider = new BankOrStorageProvider();
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
-                .AddMemoryGrainStorage("DevStore")
+                //.AddMemoryGrainStorage("DevStore")
+                .ConfigureServices(s => s.TryAddSingleton<IGrainStorage>(storageProvider))
+                .ConfigureServices(s => s.AddSingletonNamedService<IGrainStorage>("DevStore", (x,y) => new BankOrStorageProvider()))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
-                .AddMemoryGrainStorageAsDefault()
+//                .AddMemoryGrainStorageAsDefault()s                
                 .UseInClusterTransactionManager()
                 .UseInMemoryTransactionLog()
                 .UseTransactionalState();

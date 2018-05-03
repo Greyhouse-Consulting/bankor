@@ -6,9 +6,9 @@ using Orleans;
 
 namespace AccountTransfer.Interfaces
 {
-    public interface IAccontManagerGrain : IGrainWithIntegerKey
+    public interface IAccountManagerGrain : IGrainWithIntegerKey
     {
-        Task<IBankAccountGrain> Create(string userId);
+        Task<IAccountGrain> Create(string userId);
         Task<IList<Account>> GetAccounts();
     }
 }

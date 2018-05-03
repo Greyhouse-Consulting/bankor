@@ -81,8 +81,8 @@ namespace OrleansClient
             Guid from = Guid.NewGuid();
             Guid to = Guid.NewGuid();
             await atm.Transfer(from, to, 100);
-            uint fromBalance = await client.GetGrain<IAccountGrain>(from).GetBalance();
-            uint toBalance = await client.GetGrain<IAccountGrain>(to).GetBalance();
+            decimal fromBalance = await client.GetGrain<IAccountGrain>(from).GetBalance();
+            decimal toBalance = await client.GetGrain<IAccountGrain>(to).GetBalance();
             Console.WriteLine($"\n\nWe transfered 100 credits from {from} to {to}.\n{from} balance: {fromBalance}\n{to} balance: {toBalance}\n\n");
         }
     }
