@@ -1,39 +1,25 @@
 ﻿using System;
+using System.Data;
+using System.Data.Common;
 using BankOr.Core;
 using Microsoft.Data.Sqlite;
 using NPoco;
 using NPoco.FluentMappings;
+using Transaction = BankOr.Core.Transaction;
 
 namespace BankOr.Infrastructure
 {
-    public class InMemoryDatabase
+    public class InMemoryDatabase : Database
     {
-        public InMemoryDatabase()
-        {
-            DbType = DatabaseType.SQLite;
-            ConnectionString = "Data Source=:memory:;Version=3;";
-            ProviderName = DatabaseType.SQLite.GetProviderName();
-            
-            RecreateDataBase();
-            EnsureSharedConnectionConfigured();
-        }
 
         public string ProviderName { get; set; }
-
-        public string ConnectionString { get; set; }
 
         public DatabaseType DbType { get; set; }
 
         public void EnsureSharedConnectionConfigured()
         {
-            if (Connection != null) return;
-            
-
-            Connection = new Microsoft.Data.Sqlite.SqliteConnection(ConnectionString);
-            Connection.Open();
+            Connection?.Open();
         }
-
-        public SqliteConnection Connection { get; set; }
 
         public void RecreateDataBase()
         {
@@ -41,11 +27,14 @@ namespace BankOr.Infrastructure
             Console.WriteLine("Using SQLite In-Memory DB   ");
             Console.WriteLine("----------------------------");
 
+            Connection.Open();
 
             var cmd = Connection.CreateCommand();
             cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER PRIMARY KEY, Name nvarchar(200), Balance REAL);";
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, Name nvarchar(200));";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "CREATE TABLE Transactions(Id INTEGER PRIMARY KEY, Amount REAL, BookingDate DATE, AccountId INT);";
             cmd.ExecuteNonQuery();
 
             //cmd.CommandText = "CREATE TABLE ExtraUserInfos(ExtraUserInfoId INTEGER PRIMARY KEY, UserId int, Email nvarchar(200), Children int);";
@@ -67,6 +56,32 @@ namespace BankOr.Infrastructure
 
             cmd.Dispose();
         }
+
+        public InMemoryDatabase(DbConnection connection) : base(connection)
+        {
+            DbType = DatabaseType.SQLite;
+            ProviderName = DatabaseType.SQLite.GetProviderName();            
+        }
+
+        public InMemoryDatabase(DbConnection connection, DatabaseType dbType) : base(connection, dbType)
+        {
+        }
+
+        public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel) : base(connection, dbType, isolationLevel)
+        {
+        }
+
+        public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel, bool enableAutoSelect) : base(connection, dbType, isolationLevel, enableAutoSelect)
+        {
+        }
+
+        public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider) : base(connectionString, databaseType, provider)
+        {
+        }
+
+        public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider, IsolationLevel? isolationLevel = null, bool enableAutoSelect = true) : base(connectionString, databaseType, provider, isolationLevel, enableAutoSelect)
+        {
+        }
     }
 
 
@@ -81,6 +96,21 @@ namespace BankOr.Infrastructure
             {
                 x.Column(y => y.Balance).WithName("Balance");
                 x.Column(y => y.Name).WithName("Name");
+            });
+        }
+    }
+
+    public class TransactionMapping : Map<Transaction>
+    {
+        public TransactionMapping()
+        {
+            PrimaryKey(k => k.Id);
+            TableName("Transactions");
+
+            Columns(x =>
+            {
+                x.Column(y => y.Amount).WithName("Amount");
+                x.Column(y => y.BookingDate).WithName("BookingDate");
             });
         }
     }
@@ -109,9 +139,19 @@ namespace BankOr.Infrastructure
 
             DbFactory = DatabaseFactory.Config(x =>
             {
-                x.UsingDatabase(() => new Database(new InMemoryDatabase().Connection));
+                var inMemoryDatabase = new InMemoryDatabase(CreateConnection());
+
+                x.UsingDatabase(() => inMemoryDatabase);
                 x.WithFluentConfig(fluentConfig);
+
+                inMemoryDatabase.EnsureSharedConnectionConfigured();
+                inMemoryDatabase.RecreateDataBase();
             });
+        }
+
+        public static DbConnection CreateConnection()
+        {
+           return new SqliteConnection("Data Source=:memory:");
         }
     }
 }

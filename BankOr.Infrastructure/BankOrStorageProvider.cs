@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AccountTransfer.Grains;
@@ -10,11 +11,18 @@ using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
 using Orleans.Storage;
+using Transaction = BankOr.Core.Transaction;
 
 namespace BankOr.Infrastructure
 {
     public class BankOrStorageProvider : IStorageProvider
     {
+        private readonly IDatabase _database;
+
+        public BankOrStorageProvider(IDatabase database)
+        {
+            _database = database;
+        }
         public Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
         {
 
@@ -45,7 +53,7 @@ namespace BankOr.Infrastructure
                 }
             }
 
-            else if (grainType == "AccountGrain")
+            else if (grainType == "AccountTransfer.Grains.AccountGrain")
             {
                 var r = grainReference as IAccountGrain;
 
@@ -53,9 +61,12 @@ namespace BankOr.Infrastructure
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var account = db.Single<Account>(r.GetPrimaryKeyString());
+                    var accountTransactions = db.FetchMultiple<Account, Transaction>(
+                        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
+                        r.GetPrimaryKeyLong());
 
-                    state.Balance = account.Balance;
+                    state.Balance = accountTransactions.Item1.First().Balance;
+                    state.Transactions = accountTransactions.Item2;
                 }
             }
 
@@ -64,7 +75,7 @@ namespace BankOr.Infrastructure
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
-            if (grainType == "AccountGrain")
+            if (grainType == "AccountTransfer.Grains.AccountGrain")
             {
                 var r = grainReference as IAccountGrain;
 
@@ -72,12 +83,20 @@ namespace BankOr.Infrastructure
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var account = await db.SingleAsync<Account>(r.GetPrimaryKeyString());
-                    db.StartSnapshot(account);
+                    var accountTransactions = db.FetchMultiple<Account, Transaction>(
+                        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
+                        r.GetPrimaryKeyLong());
+
+                    var account = accountTransactions.Item1.First();
 
                     account.Balance = state.Balance;
 
-                    db.Update(account);
+                    await db.UpdateAsync(account);
+
+                    foreach (var stateTransaction in state.Transactions.Where(t => t.Id < 0))
+                    {
+                        await db.InsertAsync(stateTransaction);
+                    }
                 }
             }
         }

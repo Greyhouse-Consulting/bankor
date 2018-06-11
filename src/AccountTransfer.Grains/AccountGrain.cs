@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orleans;
 using Orleans.CodeGeneration;
 using Orleans.Transactions.Abstractions;
 using AccountTransfer.Interfaces;
+using BankOr.Core;
 using Orleans.Providers;
 
 [assembly: GenerateSerializer(typeof(AccountTransfer.Grains.AccountGrainState))]
@@ -14,6 +16,8 @@ namespace AccountTransfer.Grains
     public class AccountGrainState
     {
         public decimal Balance { get; set; }
+
+        public IList<Transaction> Transactions { get; set; }
     }
 
 

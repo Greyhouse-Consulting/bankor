@@ -10,6 +10,7 @@ using System.Net;
 using BankOr.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NPoco;
 using Orleans.Runtime;
 using Orleans.Storage;
 
@@ -43,12 +44,20 @@ namespace OrleansSiloHost
 
         private static async Task<ISiloHost> StartSilo()
         {
-            var storageProvider = new BankOrStorageProvider();
+
+            BankorDbFactory.Setup();
+
+            BankorDbFactory.DbFactory.Config();
+
+            var db = BankorDbFactory.DbFactory.Build(new InMemoryDatabase(BankorDbFactory.CreateConnection()));
+
+            var storageProvider = new BankOrStorageProvider(db);
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
                 //.AddMemoryGrainStorage("DevStore")
                 .ConfigureServices(s => s.TryAddSingleton<IGrainStorage>(storageProvider))
-                .ConfigureServices(s => s.AddSingletonNamedService<IGrainStorage>("DevStore", (x,y) => new BankOrStorageProvider()))
+                .ConfigureServices(s => s.TryAddSingleton(db))
+                .ConfigureServices(s => s.AddSingletonNamedService<IGrainStorage>("DevStore", (x,y) => new BankOrStorageProvider(db)))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
 //                .AddMemoryGrainStorageAsDefault()s                
