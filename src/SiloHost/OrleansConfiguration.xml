@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<OrleansConfiguration xmlns="urn:orleans">
+  <Globals>
+    <StorageProviders>
+      <Provider Type="BankOr.Infrastructure.BankOrStorageProvider" Name="DevStore"/>
+    </StorageProviders>
+  </Globals>
+</OrleansConfiguration>

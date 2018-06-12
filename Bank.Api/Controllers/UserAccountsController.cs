@@ -21,7 +21,7 @@ namespace Bank.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(string id)
         {
-            var accountManger = _clusterClient.GetGrain<IAccontManagerGrain>(0);
+            var accountManger = _clusterClient.GetGrain<IAccountManagerGrain>(0);
 
             var userAccount = await accountManger.Create(id);
 

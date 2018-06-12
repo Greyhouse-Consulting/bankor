@@ -1,7 +1,10 @@
-﻿namespace AccountTransfer.Interfaces
+﻿using System.Threading.Tasks;
+using Orleans;
+
+namespace AccountTransfer.Interfaces
 {
-    public interface ICustomerGrain
+    public interface ICustomerGrain : IGrainWithIntegerKey
     {
-        
+        Task HasNewName(string name);
     }
 }
