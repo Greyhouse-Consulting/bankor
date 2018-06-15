@@ -67,19 +67,23 @@ namespace BankOr.Infrastructure
         {
         }
 
-        public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel) : base(connection, dbType, isolationLevel)
+        public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel) 
+            : base(connection, dbType, isolationLevel)
         {
         }
 
-        public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel, bool enableAutoSelect) : base(connection, dbType, isolationLevel, enableAutoSelect)
+        public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel, bool enableAutoSelect) 
+            : base(connection, dbType, isolationLevel, enableAutoSelect)
         {
         }
 
-        public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider) : base(connectionString, databaseType, provider)
+        public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider) 
+            : base(connectionString, databaseType, provider)
         {
         }
 
-        public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider, IsolationLevel? isolationLevel = null, bool enableAutoSelect = true) : base(connectionString, databaseType, provider, isolationLevel, enableAutoSelect)
+        public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider, IsolationLevel? isolationLevel = null, bool enableAutoSelect = true) 
+            : base(connectionString, databaseType, provider, isolationLevel, enableAutoSelect)
         {
         }
     }
@@ -132,6 +136,8 @@ namespace BankOr.Infrastructure
     public static class BankorDbFactory
     {
         public static DatabaseFactory DbFactory { get; private set; }
+
+      
 
         public static void Setup()
         {

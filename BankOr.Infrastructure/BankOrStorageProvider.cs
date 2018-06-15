@@ -53,7 +53,7 @@ namespace BankOr.Infrastructure
                 }
             }
 
-            else if (grainType == "AccountTransfer.Grains.AccountGrain")
+            else if (grainType == "AccountTransfer.Grains.AccountGrain" || grainType == "AccountTransfer.Grains.AccountGrain-transactionalState")
             {
                 var r = grainReference as IAccountGrain;
 
