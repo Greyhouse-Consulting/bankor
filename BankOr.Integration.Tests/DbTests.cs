@@ -11,7 +11,7 @@ namespace BankOr.Integration.Tests
         {
             BankorDbFactory.Setup();
             var db = BankorDbFactory.DbFactory.GetDatabase();
-            
+
         }
     }
 }
