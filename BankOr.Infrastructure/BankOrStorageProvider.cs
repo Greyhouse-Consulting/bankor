@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using AccountTransfer.Grains;
 using AccountTransfer.Interfaces;
 using BankOr.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NPoco;
 using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
 using Orleans.Storage;
+using Orleans.Transactions;
 using Transaction = BankOr.Core.Transaction;
 
 namespace BankOr.Infrastructure
@@ -55,19 +57,26 @@ namespace BankOr.Infrastructure
 
             else if (grainType == "AccountTransfer.Grains.AccountGrain" || grainType == "AccountTransfer.Grains.AccountGrain-transactionalState")
             {
-                var r = grainReference as IAccountGrain;
+                var state = grainState.State as TransactionalStateRecord<AccountGrainState>;
 
-                var state = grainState as AccountGrainState;
-
-                using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
+                using (var context = ContextFactory.Create())
                 {
-                    var accountTransactions = db.FetchMultiple<Account, Transaction>(
-                        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                        r.GetPrimaryKeyLong());
+                    var pk = grainReference.GetPrimaryKey();
+                    var account = context.Accounts.Include("Transactions").FirstOrDefault(a => a.Id == pk);
 
-                    state.Balance = accountTransactions.Item1.First().Balance;
-                    state.Transactions = accountTransactions.Item2;
+                    state.CommittedState.Balance = account?.Balance ?? 0;
+                    state.CommittedState.Transactions = account?.Transactions ?? new List<Transaction>();
                 }
+
+                //using (IDatabase db = BankorDbFactory.Create())
+                //{
+                //    var accountTransactions = db.FetchMultiple<Account, Transaction>(
+                //        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
+                //        r.GetPrimaryKeyLong());
+
+                //    state.Balance = accountTransactions.Item1.First().Balance;
+                //    state.Transactions = accountTransactions.Item2;
+                //}
             }
 
             return Task.CompletedTask;

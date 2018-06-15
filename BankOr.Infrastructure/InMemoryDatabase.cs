@@ -93,7 +93,7 @@ namespace BankOr.Infrastructure
     {
         public AccountMapping()
         {
-            PrimaryKey(k => k.Id);
+            PrimaryKey(k => k.Id, true);
             TableName("Accounts");
 
             Columns(x =>
@@ -108,7 +108,7 @@ namespace BankOr.Infrastructure
     {
         public TransactionMapping()
         {
-            PrimaryKey(k => k.Id);
+            PrimaryKey(k => k.Id, true);
             TableName("Transactions");
 
             Columns(x =>
@@ -123,7 +123,7 @@ namespace BankOr.Infrastructure
     {
         public CustomerMapping()
         {
-            PrimaryKey(k => k.Id);
+            PrimaryKey(k => k.Id, true);
             TableName("Customers");
 
             Columns(x =>
@@ -139,9 +139,9 @@ namespace BankOr.Infrastructure
 
       
 
-        public static void Setup()
+        public static DatabaseFactory Setup()
         {
-            var fluentConfig = FluentMappingConfiguration.Configure(new AccountMapping(), new CustomerMapping());
+            var fluentConfig = FluentMappingConfiguration.Configure(new AccountMapping(), new CustomerMapping(), new TransactionMapping());
 
             DbFactory = DatabaseFactory.Config(x =>
             {
@@ -153,6 +153,15 @@ namespace BankOr.Infrastructure
                 inMemoryDatabase.EnsureSharedConnectionConfigured();
                 inMemoryDatabase.RecreateDataBase();
             });
+
+            return DbFactory;
+        }
+
+        public static Database Create()
+        {
+            var factory = Setup();
+
+            return factory.GetDatabase();
         }
 
         public static DbConnection CreateConnection()

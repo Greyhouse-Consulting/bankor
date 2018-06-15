@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SQLite" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.0" />
     <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.3" />
     <PackageReference Include="NPoco" Version="3.9.4" />
   </ItemGroup>
