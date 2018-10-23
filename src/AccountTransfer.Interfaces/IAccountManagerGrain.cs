@@ -9,6 +9,6 @@ namespace AccountTransfer.Interfaces
     public interface IAccountManagerGrain : IGrainWithIntegerKey
     {
         Task<IAccountGrain> Create(string userId);
-        Task<IList<Account>> GetAccounts();
+        Task<IList<Account>> GetAccounts(string customerId);
     }
 }

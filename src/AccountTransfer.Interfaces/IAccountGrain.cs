@@ -14,5 +14,7 @@ namespace AccountTransfer.Interfaces
         Task<decimal> GetBalance();
 
         Task Owner(string userId);
+        Task  SetName(string name);
+        Task<string> GetName();
     }
 }

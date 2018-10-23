@@ -24,6 +24,7 @@ namespace AccountTransfer.Grains
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
         private readonly ITransactionalState<AccountGrainState> _transactionalState;
+        private string _name;
 
         public AccountGrain(
             [TransactionalState("transactionalState")] ITransactionalState<AccountGrainState> balance)
@@ -50,6 +51,19 @@ namespace AccountTransfer.Grains
         public async Task Owner(string userId)
         {
             await Task.CompletedTask;
+        }
+
+        public Task SetName(string name)
+        {
+            _name = name;
+
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetName()
+        {
+            return Task.FromResult(_name) ;
         }
     }
 }

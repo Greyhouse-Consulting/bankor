@@ -18,7 +18,7 @@ namespace AccountTransfer.Grains
                 return bankAccountGrain;
             }
 
-        public Task<IList<Account>> GetAccounts()
+        public Task<IList<Account>> GetAccounts(string customerId)
         {
             throw new NotImplementedException();
         }

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AccountTransfer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
 
 namespace Bank.Api.Controllers
 {
-    [Route("api/accounts")]
+    [Route("api/customers/{customerId}/accounts")]
     public class AccountsController : Controller
     {
         private readonly IClusterClient _clusterClient;
@@ -19,11 +16,22 @@ namespace Bank.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get(int customerId)
         {
-            var accountManager = _clusterClient.GetGrain<IAccountManagerGrain>(0);
+            var customers = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
-            var account = await accountManager.GetAccounts();
+            var accounts = customers.GetAccounts();
+
+            return Ok(accounts);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(int customerId, [FromBody]string name)
+        {
+            var customer = _clusterClient.GetGrain<ICustomerGrain>(customerId);
+
+            await customer.CreateAccount(name);
+
             return Ok();
         }
     }

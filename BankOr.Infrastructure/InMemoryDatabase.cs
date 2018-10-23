@@ -30,9 +30,9 @@ namespace BankOr.Infrastructure
             Connection.Open();
 
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER PRIMARY KEY, Name nvarchar(200), Balance REAL);";
+            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER PRIMARY KEY, SetName nvarchar(200), Balance REAL);";
             cmd.ExecuteNonQuery();
-            cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, Name nvarchar(200));";
+            cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, SetName nvarchar(200));";
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Transactions(Id INTEGER PRIMARY KEY, Amount REAL, BookingDate DATE, AccountId INT);";
             cmd.ExecuteNonQuery();
@@ -99,7 +99,7 @@ namespace BankOr.Infrastructure
             Columns(x =>
             {
                 x.Column(y => y.Balance).WithName("Balance");
-                x.Column(y => y.Name).WithName("Name");
+                x.Column(y => y.Name).WithName("SetName");
             });
         }
     }
@@ -128,7 +128,8 @@ namespace BankOr.Infrastructure
 
             Columns(x =>
             {
-                x.Column(y => y.Name).WithName("Name");
+                x.Column(y => y.Name).WithName("SetName");
+                x.Column(c => c.Accounts).Ignore();
             });
         }
     }

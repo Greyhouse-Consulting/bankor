@@ -42,25 +42,30 @@ namespace BankOr.Infrastructure
 
             if (grainType == "AccountTransfer.Grains.CustomerGrain")
             {
-                var r = grainReference as ICustomerGrain;
-
                 var state = grainState as CustomerGrainState;
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var account = db.Single<Customer>(r.GetPrimaryKeyString());
+                    var account = db.SingleOrDefault<Customer>(grainReference.GetPrimaryKeyString());
 
-                    state.Name = account.Name;
+                    if(account != null)
+                    {
+                        state.Name = account.Name;
+                    }
                 }
             }
 
-            else if (grainType == "AccountTransfer.Grains.AccountGrain" || grainType == "AccountTransfer.Grains.AccountGrain-transactionalState")
+            else if (grainType.Contains( "AccountTransfer.Grains.AccountGrain,AccountTransfer.Grains-transactionalState"))
+            {
+                var state = grainState.State as TransactionalStateRecord<AccountGrainState>;
+            }
+            else if (grainType.Contains("AccountTransfer.Grains.AccountGrain") )
             {
                 var state = grainState.State as AccountGrainState;
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var accountTransactions = db.FetchMultiple<Account, Transaction>(
+                    var accountTransactions = db.FetchMultiple <Account, Transaction>(
                         "SELECT * FROM ACCOUNTS WHERE ID = '@0'; SELECT * FROM TRANSACTIONS WHERE AccountId = '@0';",
                         grainReference.GetPrimaryKey());
 
