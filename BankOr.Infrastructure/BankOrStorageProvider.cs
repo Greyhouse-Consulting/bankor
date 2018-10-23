@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AccountTransfer.Grains;
 using AccountTransfer.Interfaces;
 using BankOr.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NPoco;
 using Orleans;
@@ -36,7 +35,7 @@ namespace BankOr.Infrastructure
             return Task.CompletedTask;
         }
 
-        public string Name => "DevStore";
+        public string Name => "BankOrStorageProvider";
 
         public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
@@ -57,26 +56,17 @@ namespace BankOr.Infrastructure
 
             else if (grainType == "AccountTransfer.Grains.AccountGrain" || grainType == "AccountTransfer.Grains.AccountGrain-transactionalState")
             {
-                var state = grainState.State as TransactionalStateRecord<AccountGrainState>;
+                var state = grainState.State as AccountGrainState;
 
-                using (var context = ContextFactory.Create())
+                using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var pk = grainReference.GetPrimaryKey();
-                    var account = context.Accounts.Include("Transactions").FirstOrDefault(a => a.Id == pk);
+                    var accountTransactions = db.FetchMultiple<Account, Transaction>(
+                        "SELECT * FROM ACCOUNTS WHERE ID = '@0'; SELECT * FROM TRANSACTIONS WHERE AccountId = '@0';",
+                        grainReference.GetPrimaryKey());
 
-                    state.CommittedState.Balance = account?.Balance ?? 0;
-                    state.CommittedState.Transactions = account?.Transactions ?? new List<Transaction>();
+                    state.Balance = !accountTransactions.Item1.Any() ? 0 : accountTransactions.Item1.First().Balance;
+                    state.Transactions = accountTransactions.Item2.Any() ? accountTransactions.Item2 : new List<Transaction>();
                 }
-
-                //using (IDatabase db = BankorDbFactory.Create())
-                //{
-                //    var accountTransactions = db.FetchMultiple<Account, Transaction>(
-                //        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                //        r.GetPrimaryKeyLong());
-
-                //    state.Balance = accountTransactions.Item1.First().Balance;
-                //    state.Transactions = accountTransactions.Item2;
-                //}
             }
 
             return Task.CompletedTask;

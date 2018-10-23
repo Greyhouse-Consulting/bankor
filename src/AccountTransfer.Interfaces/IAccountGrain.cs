@@ -5,10 +5,10 @@ namespace AccountTransfer.Interfaces
 {
     public interface IAccountGrain : IGrainWithGuidKey
     {
-        [Transaction(TransactionOption.Required)]
+        [Transaction(TransactionOption.Create)]
         Task Withdraw(uint amount);
 
-        [Transaction(TransactionOption.Required)]
+        [Transaction(TransactionOption.Create)]
         Task Deposit(uint amount);
 
         Task<decimal> GetBalance();

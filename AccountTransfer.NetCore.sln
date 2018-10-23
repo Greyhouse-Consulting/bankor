@@ -25,7 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankOr.Core", "BankOr.Core\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankOr.Infrastructure", "BankOr.Infrastructure\BankOr.Infrastructure.csproj", "{F3ED0308-FA4E-436C-8B1A-1935558DAC94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOr.Integration.Tests", "BankOr.Integration.Tests\BankOr.Integration.Tests.csproj", "{56EB9E9A-ED8C-496F-A9A6-164AB11A645B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

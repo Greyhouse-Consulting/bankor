@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Orleans;
-using Orleans.Runtime.Configuration;
 using Orleans.Hosting;
-using Orleans.Hosting.Development;
 using Orleans.Configuration;
 using System.Net;
 using BankOr.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NPoco;
 using Orleans.Runtime;
 using Orleans.Storage;
 
@@ -46,10 +41,11 @@ namespace OrleansSiloHost
         {
 
             BankorDbFactory.Setup();
+            var conn = BankorDbFactory.CreateConnection();
+            var db = new InMemoryDatabase(conn);
 
-            BankorDbFactory.DbFactory.Config();
-
-            var db = BankorDbFactory.DbFactory.Build(new InMemoryDatabase(BankorDbFactory.CreateConnection()));
+            db.EnsureSharedConnectionConfigured();
+            db.RecreateDataBase();
 
             var storageProvider = new BankOrStorageProvider(db);
             var builder = new SiloHostBuilder()
@@ -57,13 +53,16 @@ namespace OrleansSiloHost
                 //.AddMemoryGrainStorage("DevStore")
                 .ConfigureServices(s => s.TryAddSingleton<IGrainStorage>(storageProvider))
                 .ConfigureServices(s => s.TryAddSingleton(db))
-                .ConfigureServices(s => s.AddSingletonNamedService<IGrainStorage>("DevStore", (x,y) => new BankOrStorageProvider(db)))
+                .ConfigureServices(s =>
+                    s.AddSingletonNamedService<IGrainStorage>("BankOrStorageProvider",
+                        (x, y) => new BankOrStorageProvider(db)))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
-//                .AddMemoryGrainStorageAsDefault()s                
-                .UseInClusterTransactionManager()
-                .UseInMemoryTransactionLog()
-                .UseTransactionalState();
+                .UseTransactions()
+                .AddMemoryGrainStorageAsDefault();
+                
+
+            //               .UseTransactionalState();
 
             var host = builder.Build();
             await host.StartAsync();

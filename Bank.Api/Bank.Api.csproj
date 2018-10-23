@@ -9,9 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.3" />
-    <PackageReference Include="Microsoft.Orleans.Transactions" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.1.2" />
+    <PackageReference Include="Microsoft.Orleans.Transactions" Version="2.1.2" />
     <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="3.0.1" />
@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BankOr.Infrastructure\BankOr.Infrastructure.csproj" />
     <ProjectReference Include="..\src\AccountTransfer.Interfaces\AccountTransfer.Interfaces.csproj" />
   </ItemGroup>
 

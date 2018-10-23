@@ -31,28 +31,25 @@ namespace AccountTransfer.Grains
             this._transactionalState = balance ?? throw new ArgumentNullException(nameof(balance));
         }
 
-        Task IAccountGrain.Deposit(uint amount)
+        async Task IAccountGrain.Deposit(uint amount)
         {
-            this._transactionalState.State.Balance += amount;
-            this._transactionalState.Save();
-            return Task.CompletedTask;
+            await this._transactionalState.PerformUpdate(x => x.Balance += amount);
         }
 
         Task IAccountGrain.Withdraw(uint amount)
         {
-            this._transactionalState.State.Balance -= amount;
-            this._transactionalState.Save();
+            this._transactionalState.PerformUpdate(x => x.Balance - amount);
             return Task.CompletedTask;
         }
 
         Task<decimal> IAccountGrain.GetBalance()
         {
-            return Task.FromResult(this._transactionalState.State.Balance);
+            return  this._transactionalState.PerformRead(x => x.Balance);
         }
 
-        public Task Owner(string userId)
+        public async Task Owner(string userId)
         {
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
     }
 }
