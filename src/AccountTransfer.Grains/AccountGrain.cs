@@ -20,7 +20,7 @@ namespace AccountTransfer.Grains
         public IList<Transaction> Transactions { get; set; }
     }
 
-    [StorageProvider(ProviderName="BankOrStorageProvider")]
+    [StorageProvider(ProviderName = "BankOrStorageProvider")]
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
         private readonly ITransactionalState<AccountGrainState> _transactionalState;
@@ -29,23 +29,22 @@ namespace AccountTransfer.Grains
         public AccountGrain(
             [TransactionalState("transactionalState")] ITransactionalState<AccountGrainState> balance)
         {
-            this._transactionalState = balance ?? throw new ArgumentNullException(nameof(balance));
+            _transactionalState = balance ?? throw new ArgumentNullException(nameof(balance));
         }
 
-        async Task IAccountGrain.Deposit(uint amount)
+        public async Task Deposit(uint amount)
         {
-            await this._transactionalState.PerformUpdate(x => x.Balance += amount);
+            await _transactionalState.PerformUpdate(x => x.Balance += amount);
         }
 
-        Task IAccountGrain.Withdraw(uint amount)
+        public async Task Withdraw(uint amount)
         {
-            this._transactionalState.PerformUpdate(x => x.Balance - amount);
-            return Task.CompletedTask;
+            await _transactionalState.PerformUpdate(x => x.Balance - amount);
         }
 
-        Task<decimal> IAccountGrain.GetBalance()
+        public async Task<decimal> GetBalance()
         {
-            return  this._transactionalState.PerformRead(x => x.Balance);
+            return await _transactionalState.PerformRead(x => x.Balance);
         }
 
         public async Task Owner(string userId)
@@ -63,7 +62,7 @@ namespace AccountTransfer.Grains
 
         public Task<string> GetName()
         {
-            return Task.FromResult(_name) ;
+            return Task.FromResult(_name);
         }
     }
 }

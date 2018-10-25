@@ -5,20 +5,19 @@ using AccountTransfer.Interfaces;
 using BankOr.Core;
 using Orleans;
 using Orleans.Providers;
+using Orleans.Transactions.Abstractions;
 
 namespace AccountTransfer.Grains
 {
 
-    [StorageProvider(ProviderName="BankOrStorageProvider")]
+    [StorageProvider(ProviderName = "BankOrStorageProvider")]
     public class CustomerGrain : Grain<CustomerGrainState>, ICustomerGrain
     {
         public async Task HasNewName(string name)
         {
-            this.State.Name = name;
+            State.Name = name;
             await this.WriteStateAsync();
         }
-
-
 
         public async Task<IList<string>> GetAccounts()
         {
@@ -33,13 +32,18 @@ namespace AccountTransfer.Grains
             return accountNames;
         }
 
+
+        //[Transaction(TransactionOption.Supported)]
         public async Task CreateAccount(string name)
         {
-            var account = GrainFactory.GetGrain<IAccountGrain>(Guid.NewGuid());
+            //var account = GrainFactory.GetGrain<IAccountGrain>(Guid.NewGuid());
 
-            await account.SetName(name);
+            //await account.SetName(name);
 
-            State.AccountIds.Add(account.GetPrimaryKey());
+            State.AccountIds.Add(Guid.NewGuid());
+
+            await WriteStateAsync();
+
         }
     }
 }

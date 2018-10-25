@@ -57,9 +57,9 @@ namespace OrleansSiloHost
                     s.AddSingletonNamedService<IGrainStorage>("BankOrStorageProvider",
                         (x, y) => new BankOrStorageProvider(db)))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
-                .ConfigureLogging(logging => logging.AddConsole())
-                .UseTransactions()
-                .AddMemoryGrainStorageAsDefault();
+                .ConfigureLogging(logging => logging.AddConsole());
+                //.UseTransactions()
+                //.AddMemoryGrainStorageAsDefault();
                 
 
             //               .UseTransactionalState();

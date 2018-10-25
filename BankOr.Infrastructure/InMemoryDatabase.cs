@@ -34,6 +34,8 @@ namespace BankOr.Infrastructure
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, SetName nvarchar(200));";
             cmd.ExecuteNonQuery();
+            cmd.CommandText = "CREATE TABLE Customers_Accounts(CustomerId INTEGER , AccountId INTEGER, PRIMARY KEY (CustomerId, AccountId));";
+            cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Transactions(Id INTEGER PRIMARY KEY, Amount REAL, BookingDate DATE, AccountId INT);";
             cmd.ExecuteNonQuery();
 
@@ -134,6 +136,25 @@ namespace BankOr.Infrastructure
         }
     }
 
+    public class CustomerAccountMapping : Map<CustomerAccount>
+    {
+        public CustomerAccountMapping()
+        {
+
+            CompositePrimaryKey(k => k.CustomerId, k => k.AccountId);
+
+            TableName("Customers_Accounts");
+
+            Columns(x =>
+            {
+                x.Column(y => y.CustomerId);
+                x.Column(y => y.AccountId);
+            });
+        }
+    }
+
+
+
     public static class BankorDbFactory
     {
         public static DatabaseFactory DbFactory { get; private set; }
@@ -142,7 +163,11 @@ namespace BankOr.Infrastructure
 
         public static DatabaseFactory Setup()
         {
-            var fluentConfig = FluentMappingConfiguration.Configure(new AccountMapping(), new CustomerMapping(), new TransactionMapping());
+            var fluentConfig = FluentMappingConfiguration.Configure(
+                new AccountMapping(),
+                new CustomerMapping(),
+                new TransactionMapping(),
+                new CustomerAccountMapping());
 
             DbFactory = DatabaseFactory.Config(x =>
             {

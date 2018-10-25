@@ -42,30 +42,34 @@ namespace BankOr.Infrastructure
 
             if (grainType == "AccountTransfer.Grains.CustomerGrain")
             {
-                var state = grainState as CustomerGrainState;
+                var state = grainState.State as CustomerGrainState;
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
                     var account = db.SingleOrDefault<Customer>(grainReference.GetPrimaryKeyString());
 
-                    if(account != null)
+                    if (account != null)
                     {
                         state.Name = account.Name;
+                    }
+                    else
+                    {
+                        state.AccountIds = new List<Guid>();
                     }
                 }
             }
 
-            else if (grainType.Contains( "AccountTransfer.Grains.AccountGrain,AccountTransfer.Grains-transactionalState"))
+            else if (grainType.Contains("AccountTransfer.Grains.AccountGrain,AccountTransfer.Grains-transactionalState"))
             {
                 var state = grainState.State as TransactionalStateRecord<AccountGrainState>;
             }
-            else if (grainType.Contains("AccountTransfer.Grains.AccountGrain") )
+            else if (grainType.Contains("AccountTransfer.Grains.AccountGrain"))
             {
                 var state = grainState.State as AccountGrainState;
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var accountTransactions = db.FetchMultiple <Account, Transaction>(
+                    var accountTransactions = db.FetchMultiple<Account, Transaction>(
                         "SELECT * FROM ACCOUNTS WHERE ID = '@0'; SELECT * FROM TRANSACTIONS WHERE AccountId = '@0';",
                         grainReference.GetPrimaryKey());
 
@@ -83,7 +87,7 @@ namespace BankOr.Infrastructure
             {
                 var r = grainReference as IAccountGrain;
 
-                var state = grainState as AccountGrainState;
+                var state = grainState.State as AccountGrainState;
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
@@ -101,6 +105,32 @@ namespace BankOr.Infrastructure
                     {
                         await db.InsertAsync(stateTransaction);
                     }
+                }
+            }
+
+            if (grainType == "AccountTransfer.Grains.CustomerGrain")
+            {
+
+                var state = grainState.State as CustomerGrainState;
+                using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
+                {
+                    var customerAccounts = db.FetchMultiple<Customer, Guid>(
+                        "SELECT * FROM CUSTOMERS WHERE ID = @0; SELECT AccountId FROM CUSTOMERS_ACCOUNTS WHERE CustomerId = @0;",
+                        grainReference.GetPrimaryKeyLong());
+
+                    //var customer = customerAccounts.Item1.First();
+
+
+                    var newAccounts = customerAccounts.Item2.Except(state.AccountIds);
+
+                    //foreach (var newAccount in newAccounts)
+                    //{
+                        db.Insert<CustomerAccount>(new CustomerAccount
+                        {
+                            AccountId = 3001,
+                            CustomerId = 3000
+                        });
+                    //}
                 }
             }
         }
