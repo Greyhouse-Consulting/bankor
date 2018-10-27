@@ -25,7 +25,7 @@ namespace Bank.Api
             var db = new InMemoryDatabase(conn);
 
             db.EnsureSharedConnectionConfigured();
-            db.RecreateDataBase();
+            //db.RecreateDataBase();
 
             services.AddSingleton(db);
             services.AddMvc();

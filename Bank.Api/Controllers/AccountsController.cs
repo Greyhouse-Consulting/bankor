@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AccountTransfer.Interfaces;
+using AccountTransfer.Interfaces.Grains;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
 

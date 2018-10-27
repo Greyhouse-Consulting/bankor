@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AccountTransfer.Grains;
-using AccountTransfer.Interfaces;
+using AccountTransfer.Interfaces.Grains;
 using BankOr.Core;
 using Microsoft.Extensions.Logging;
 using NPoco;
@@ -19,10 +19,12 @@ namespace BankOr.Infrastructure
     public class BankOrStorageProvider : IStorageProvider
     {
         private readonly IDatabase _database;
+        private readonly IGrainFactory _grainFactory;
 
-        public BankOrStorageProvider(IDatabase database)
+        public BankOrStorageProvider(IDatabase database, IGrainFactory grainFactory)
         {
             _database = database;
+            _grainFactory = grainFactory;
         }
         public Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
         {
@@ -51,10 +53,18 @@ namespace BankOr.Infrastructure
                     if (account != null)
                     {
                         state.Name = account.Name;
+
+                        var customerAccounts = db.Fetch<CustomerAccount>("SELECT * FROM Customers_Accounts WHERE CustomerId = '@0'", grainReference.GetPrimaryKeyLong());
+
+                        foreach (var customerAccount in customerAccounts)
+                        {
+                            state.AccountGrains.Add(_grainFactory.GetGrain<IAccountGrain>(customerAccount.AccountId));
+                        }
+
                     }
                     else
                     {
-                        state.AccountIds = new List<Guid>();
+                        state.AccountIds = new List<int>();
                     }
                 }
             }
@@ -114,23 +124,33 @@ namespace BankOr.Infrastructure
                 var state = grainState.State as CustomerGrainState;
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var customerAccounts = db.FetchMultiple<Customer, Guid>(
+                    var customerAccounts = db.FetchMultiple<Customer, int>(
                         "SELECT * FROM CUSTOMERS WHERE ID = @0; SELECT AccountId FROM CUSTOMERS_ACCOUNTS WHERE CustomerId = @0;",
                         grainReference.GetPrimaryKeyLong());
 
                     //var customer = customerAccounts.Item1.First();
 
 
-                    var newAccounts = customerAccounts.Item2.Except(state.AccountIds);
 
-                    //foreach (var newAccount in newAccounts)
-                    //{
-                        db.Insert<CustomerAccount>(new CustomerAccount
+
+                    if (!customerAccounts.Item1.Any())
+
+                    {
+                        db.Insert<Customer>(new Customer
                         {
-                            AccountId = 3001,
-                            CustomerId = 3000
+                            Name = state.Name,
+                            Created = true,
+                            Id = grainReference.GetPrimaryKeyLong()
                         });
-                    //}
+                    }
+                    else
+                    {
+                        var newAccounts = customerAccounts.Item2.Except(state.AccountIds);
+
+                        foreach (var newAccount in newAccounts)
+                        {
+                        }
+                    }
                 }
             }
         }

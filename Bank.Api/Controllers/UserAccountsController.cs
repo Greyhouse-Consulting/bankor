@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AccountTransfer.Interfaces;
+using AccountTransfer.Interfaces.Grains;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
 
@@ -18,7 +18,7 @@ namespace Bank.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(string id)
         {
-            var accountManger = _clusterClient.GetGrain<IAccountManagerGrain>(0);
+            var accountManger = _clusterClient.GetGrain<ICustomerManagerGrain>(0);
 
             var userAccount = await accountManger.Create(id);
 

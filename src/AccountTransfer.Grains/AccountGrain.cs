@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AccountTransfer.Interfaces.Grains;
 using Orleans;
 using Orleans.CodeGeneration;
 using Orleans.Transactions.Abstractions;
-using AccountTransfer.Interfaces;
 using BankOr.Core;
 using Orleans.Providers;
 

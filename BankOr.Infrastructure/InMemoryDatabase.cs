@@ -30,9 +30,9 @@ namespace BankOr.Infrastructure
             Connection.Open();
 
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER PRIMARY KEY, SetName nvarchar(200), Balance REAL);";
+            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER PRIMARY KEY, Name nvarchar(200), Balance REAL);";
             cmd.ExecuteNonQuery();
-            cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, SetName nvarchar(200));";
+            cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, Name nvarchar(200), Created INTEGER);";
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Customers_Accounts(CustomerId INTEGER , AccountId INTEGER, PRIMARY KEY (CustomerId, AccountId));";
             cmd.ExecuteNonQuery();
@@ -101,7 +101,7 @@ namespace BankOr.Infrastructure
             Columns(x =>
             {
                 x.Column(y => y.Balance).WithName("Balance");
-                x.Column(y => y.Name).WithName("SetName");
+                x.Column(y => y.Name).WithName("Name");
             });
         }
     }
@@ -126,12 +126,13 @@ namespace BankOr.Infrastructure
         public CustomerMapping()
         {
             PrimaryKey(k => k.Id, true);
-            TableName("Customers");
+            TableName("Customer");
 
             Columns(x =>
             {
-                x.Column(y => y.Name).WithName("SetName");
+                x.Column(y => y.Name);
                 x.Column(c => c.Accounts).Ignore();
+                x.Column(c => c.Created);
             });
         }
     }
@@ -155,6 +156,42 @@ namespace BankOr.Infrastructure
 
 
 
+
+
+    public class NPocoLabMappings : Mappings
+    {
+        public NPocoLabMappings()
+        {
+            MapCustomers();
+            MapAccounts();
+        }
+
+        private void MapAccounts()
+        {
+            For<Account>().PrimaryKey(k => k.Id, true);
+            For<Account>().TableName("Accounts");
+
+            For<Account>().Columns(x =>
+            {
+                x.Column(y => y.Balance).WithName("Balance");
+                x.Column(y => y.Name).WithName("Name");
+            });
+        }
+
+        private void MapCustomers()
+        {
+            For<Customer>().PrimaryKey(k => k.Id, true);
+
+            For<Customer>().TableName("Customers");
+
+            For<Customer>().Columns(x =>
+            {
+                x.Column(y => y.Id);
+                x.Column(y => y.Name);
+                x.Column(y => y.Accounts).Ignore();
+            });
+        }
+    }
     public static class BankorDbFactory
     {
         public static DatabaseFactory DbFactory { get; private set; }
@@ -163,15 +200,11 @@ namespace BankOr.Infrastructure
 
         public static DatabaseFactory Setup()
         {
-            var fluentConfig = FluentMappingConfiguration.Configure(
-                new AccountMapping(),
-                new CustomerMapping(),
-                new TransactionMapping(),
-                new CustomerAccountMapping());
+            var fluentConfig = FluentMappingConfiguration.Configure(new NPocoLabMappings());
 
             DbFactory = DatabaseFactory.Config(x =>
             {
-                var inMemoryDatabase = new InMemoryDatabase(CreateConnection());
+                var inMemoryDatabase = new InMemoryDatabase(CreateConnection(), DatabaseType.SQLite);
 
                 x.UsingDatabase(() => inMemoryDatabase);
                 x.WithFluentConfig(fluentConfig);

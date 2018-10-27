@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using BankOr.Core;
 using Orleans;
 
-namespace AccountTransfer.Interfaces
+namespace AccountTransfer.Interfaces.Grains
 {
     public interface ICustomerGrain : IGrainWithIntegerKey
     {
@@ -11,5 +10,6 @@ namespace AccountTransfer.Interfaces
         Task<IList<string>> GetAccounts();
 
         Task CreateAccount(string name);
+        Task TryInit(string name);
     }
 }

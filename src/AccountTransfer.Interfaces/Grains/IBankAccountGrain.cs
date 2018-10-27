@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Orleans;
 
-namespace AccountTransfer.Interfaces
+namespace AccountTransfer.Interfaces.Grains
 {
     public interface IBankAccountGrain : IGrainWithGuidKey
     {

@@ -1,13 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans.Hosting;
 using Orleans.Configuration;
 using System.Net;
+using AccountTransfer.Interfaces.Repository;
 using BankOr.Infrastructure;
+using BankOr.Infrastructure.Repository;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NPoco;
+using Orleans;
 using Orleans.Runtime;
 using Orleans.Storage;
+using Orleans.Versions;
+using Orleans.Versions.Compatibility;
+using Orleans.Versions.Selector;
 
 namespace OrleansSiloHost
 {
@@ -40,27 +48,24 @@ namespace OrleansSiloHost
         private static async Task<ISiloHost> StartSilo()
         {
 
-            BankorDbFactory.Setup();
-            var conn = BankorDbFactory.CreateConnection();
-            var db = new InMemoryDatabase(conn);
+            var db = BankorDbFactory.Create();
+            //var storageProvider = new BankOrStorageProvider(db);
 
-            db.EnsureSharedConnectionConfigured();
-            db.RecreateDataBase();
-
-            var storageProvider = new BankOrStorageProvider(db);
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
-                //.AddMemoryGrainStorage("DevStore")
-                .ConfigureServices(s => s.TryAddSingleton<IGrainStorage>(storageProvider))
-                .ConfigureServices(s => s.TryAddSingleton(db))
+                .AddMemoryGrainStorage("DevStore")
+                .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, BankOrStorageProvider>())
+                .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
+                .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("BankOrStorageProvider",
-                        (x, y) => new BankOrStorageProvider(db)))
+                        (x, y) => new BankOrStorageProvider((IDatabase) (x.GetService(typeof(IDatabase))),
+                            (IGrainFactory) x.GetService(typeof(IGrainFactory)))))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
-                .ConfigureLogging(logging => logging.AddConsole());
+                .ConfigureLogging(logging => logging.AddConsole())
                 //.UseTransactions()
-                //.AddMemoryGrainStorageAsDefault();
-                
+                .AddMemoryGrainStorageAsDefault();
+
 
             //               .UseTransactionalState();
 
@@ -69,4 +74,5 @@ namespace OrleansSiloHost
             return host;
         }
     }
+
 }

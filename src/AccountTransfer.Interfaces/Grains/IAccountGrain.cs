@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Orleans;
 
-namespace AccountTransfer.Interfaces
+namespace AccountTransfer.Interfaces.Grains
 {
-    public interface IAccountGrain : IGrainWithGuidKey
+    public interface IAccountGrain : IGrainWithIntegerKey
     {
         [Transaction(TransactionOption.Create)]
         Task Withdraw(uint amount);

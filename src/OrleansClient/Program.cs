@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
-using AccountTransfer.Interfaces;
 using System.Net;
+using AccountTransfer.Interfaces.Grains;
 using Orleans.Configuration;
 
 namespace OrleansClient
@@ -26,7 +26,7 @@ namespace OrleansClient
             {
                 using (var client = await StartClientWithRetries())
                 {
-                    await DoClientWork(client);
+                    //await DoClientWork(client);
                     Console.ReadKey();
                 }
 
@@ -75,15 +75,15 @@ namespace OrleansClient
             return client;
         }
 
-        private static async Task DoClientWork(IClusterClient client)
-        {
-            IATMGrain atm = client.GetGrain<IATMGrain>(0);
-            Guid from = Guid.NewGuid();
-            Guid to = Guid.NewGuid();
-            await atm.Transfer(from, to, 100);
-            decimal fromBalance = await client.GetGrain<IAccountGrain>(from).GetBalance();
-            decimal toBalance = await client.GetGrain<IAccountGrain>(to).GetBalance();
-            Console.WriteLine($"\n\nWe transfered 100 credits from {from} to {to}.\n{from} balance: {fromBalance}\n{to} balance: {toBalance}\n\n");
-        }
+        //private static async Task DoClientWork(IClusterClient client)
+        //{
+        //    IATMGrain atm = client.GetGrain<IATMGrain>(0);
+        //    Guid from = Guid.NewGuid();
+        //    Guid to = Guid.NewGuid();
+        //    await atm.Transfer(from, to, 100);
+        //    decimal fromBalance = await client.GetGrain<IAccountGrain>(from).GetBalance();
+        //    decimal toBalance = await client.GetGrain<IAccountGrain>(to).GetBalance();
+        //    Console.WriteLine($"\n\nWe transfered 100 credits from {from} to {to}.\n{from} balance: {fromBalance}\n{to} balance: {toBalance}\n\n");
+        //}
     }
 }
