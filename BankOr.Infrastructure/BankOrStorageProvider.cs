@@ -103,7 +103,7 @@ namespace BankOr.Infrastructure
                 {
                     var accountTransactions = db.FetchMultiple<Account, Transaction>(
                         "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                        r.GetPrimaryKeyLong());
+                        r.GetPrimaryKeyLong()); 
 
                     var account = accountTransactions.Item1.First();
 

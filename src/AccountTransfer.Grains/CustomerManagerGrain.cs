@@ -24,7 +24,7 @@ namespace AccountTransfer.Grains
                 Name = name
             };
 
-            var customerId = Guid.NewGuid().GetHashCode();
+            var customerId = Math.Abs(Guid.NewGuid().GetHashCode());
 
             //var customerId = await _customerRepository.Insert(customer);
 
