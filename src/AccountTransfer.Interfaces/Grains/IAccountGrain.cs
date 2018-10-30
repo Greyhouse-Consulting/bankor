@@ -12,7 +12,7 @@ namespace AccountTransfer.Interfaces.Grains
         Task<decimal> GetBalance();
 
         Task Owner(string userId);
-        Task  SetName(string name);
+        Task  HasNewName(string name);
         Task<string> GetName();
     }
 }

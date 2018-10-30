@@ -30,7 +30,7 @@ namespace BankOr.Infrastructure
             Connection.Open();
 
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER, Name nvarchar(200), Balance REAL,  PRIMARY KEY (Id));";
+            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER, Name nvarchar(200), Balance REAL, Created INTEGER, PRIMARY KEY (Id));";
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Customers(Id INTEGER , Name nvarchar(200), Created INTEGER, PRIMARY KEY (Id));";
             cmd.ExecuteNonQuery();
@@ -176,6 +176,9 @@ namespace BankOr.Infrastructure
             {
                 x.Column(y => y.Balance).WithName("Balance");
                 x.Column(y => y.Name).WithName("Name");
+                x.Column(y => y.Created).WithName("Created");
+                x.Column(y => y.Transactions).Ignore();
+                x.Column(y => y.Customers).Ignore();
             });
         }
 

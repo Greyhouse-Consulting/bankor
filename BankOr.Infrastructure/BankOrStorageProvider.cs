@@ -79,8 +79,15 @@ namespace BankOr.Infrastructure
                         "SELECT * FROM ACCOUNTS WHERE ID = '@0'; SELECT * FROM TRANSACTIONS WHERE AccountId = '@0';",
                         grainReference.GetPrimaryKey());
 
-                    state.Balance = !accountTransactions.Item1.Any() ? 0 : accountTransactions.Item1.First().Balance;
-                    state.Transactions = accountTransactions.Item2.Any() ? accountTransactions.Item2 : new List<Transaction>();
+                    if(accountTransactions.Item1.Any())
+                    {
+                        state.Balance = accountTransactions.Item1.First().Balance;
+                        state.Transactions = accountTransactions.Item2;
+                        state.Name = accountTransactions.Item1.First().Name;
+                        state.Created = accountTransactions.Item1.First().Created;
+                    }
+
+
                 }
             }
 
@@ -91,31 +98,32 @@ namespace BankOr.Infrastructure
         {
             if (grainType == "AccountTransfer.Grains.AccountGrain")
             {
-                var r = grainReference as IAccountGrain;
-
                 var state = grainState.State as AccountGrainState;
 
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
                     var accountTransactions = db.FetchMultiple<Account, Transaction>(
                         "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                        r.GetPrimaryKeyLong());
+                        grainReference.GetPrimaryKeyLong());
 
-                    var account = accountTransactions.Item1.First();
+                    var account = accountTransactions.Item1.FirstOrDefault();
 
                     if (account == null)
                     {
                         db.Insert(new Account
                         {
-                            Id = r.GetPrimaryKeyLong(),
+                            Id = grainReference.GetPrimaryKeyLong(),
                             Balance = 0,
                             Name = state.Name,
+                            Created = true
                         });
+                        state.Created = true;
                     }
                     else
                     {
                         account.Balance = state.Balance;
                         account.Name = state.Name;
+                        account.Created = state.Created;
 
                         await db.UpdateAsync(account);
 

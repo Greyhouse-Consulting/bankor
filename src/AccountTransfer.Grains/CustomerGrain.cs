@@ -40,7 +40,10 @@ namespace AccountTransfer.Grains
 
             var item = Math.Abs(Guid.NewGuid().GetHashCode());  
             var account = GrainFactory.GetGrain<IAccountGrain>(item);
+
+            await account.HasNewName(name);
             State.AccountGrains.Add(account);
+
             await WriteStateAsync();
 
         }

@@ -18,23 +18,23 @@ namespace Bank.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(int customerId)
+        public async Task<IActionResult> Get(int customerId)
         {
             var customers = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
-            var accounts = customers.GetAccounts();
+            var accounts = await customers.GetAccounts();
 
             return Ok(accounts);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(int customerId, [FromBody]string name)
+        public async Task<IActionResult> Post(int customerId, [FromBody]CreateAccountRequest request)
         {
             var customer = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
             try
             {
-                await customer.CreateAccount(name);
+                await customer.CreateAccount(request.Name);
             }
             catch (GrainDoesNotExistException e)
             {
@@ -43,5 +43,10 @@ namespace Bank.Api.Controllers
 
             return Ok();
         }
+    }
+
+    public class CreateAccountRequest
+    {
+        public string Name { get; set; }
     }
 }
