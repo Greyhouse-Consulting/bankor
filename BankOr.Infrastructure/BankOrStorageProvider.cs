@@ -136,19 +136,22 @@ namespace BankOr.Infrastructure
                     if (!customerAccounts.Item1.Any())
 
                     {
-                        db.Insert<Customer>(new Customer
+                        db.Save<Customer>(new Customer
                         {
                             Name = state.Name,
                             Created = true,
                             Id = grainReference.GetPrimaryKeyLong()
                         });
+                        state.Created = true;
                     }
                     else
                     {
-                        var newAccounts = customerAccounts.Item2.Except(state.AccountIds);
+                        var newAccounts = state.AccountIds.Except( customerAccounts.Item2 );
 
                         foreach (var newAccount in newAccounts)
                         {
+                            db.Insert(new CustomerAccount
+                                {AccountId = newAccount, CustomerId = grainReference.GetPrimaryKeyLong()});
                         }
                     }
                 }

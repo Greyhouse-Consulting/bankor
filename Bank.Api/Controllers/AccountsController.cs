@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AccountTransfer.Interfaces.Grains;
+using BankOr.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
 
@@ -30,7 +32,14 @@ namespace Bank.Api.Controllers
         {
             var customer = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
-            await customer.CreateAccount(name);
+            try
+            {
+                await customer.CreateAccount(name);
+            }
+            catch (GrainDoesNotExistException e)
+            {
+                return NotFound(customerId);
+            }
 
             return Ok();
         }

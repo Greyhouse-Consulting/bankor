@@ -30,9 +30,9 @@ namespace BankOr.Infrastructure
             Connection.Open();
 
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER PRIMARY KEY, Name nvarchar(200), Balance REAL);";
+            cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER, Name nvarchar(200), Balance REAL,  PRIMARY KEY (Id));";
             cmd.ExecuteNonQuery();
-            cmd.CommandText = "CREATE TABLE Customers(Id INTEGER PRIMARY KEY, Name nvarchar(200), Created INTEGER);";
+            cmd.CommandText = "CREATE TABLE Customers(Id INTEGER , Name nvarchar(200), Created INTEGER, PRIMARY KEY (Id));";
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Customers_Accounts(CustomerId INTEGER , AccountId INTEGER, PRIMARY KEY (CustomerId, AccountId));";
             cmd.ExecuteNonQuery();
@@ -91,68 +91,68 @@ namespace BankOr.Infrastructure
     }
 
 
-    public class AccountMapping : Map<Account>
-    {
-        public AccountMapping()
-        {
-            PrimaryKey(k => k.Id, true);
-            TableName("Accounts");
+    //public class AccountMapping : Map<Account>
+    //{
+    //    public AccountMapping()
+    //    {
+    //        PrimaryKey(k => k.Id, true);
+    //        TableName("Accounts");
 
-            Columns(x =>
-            {
-                x.Column(y => y.Balance).WithName("Balance");
-                x.Column(y => y.Name).WithName("Name");
-            });
-        }
-    }
+    //        Columns(x =>
+    //        {
+    //            x.Column(y => y.Balance).WithName("Balance");
+    //            x.Column(y => y.Name).WithName("Name");
+    //        });
+    //    }
+    //}
 
-    public class TransactionMapping : Map<Transaction>
-    {
-        public TransactionMapping()
-        {
-            PrimaryKey(k => k.Id, true);
-            TableName("Transactions");
+    //public class TransactionMapping : Map<Transaction>
+    //{
+    //    public TransactionMapping()
+    //    {
+    //        PrimaryKey(k => k.Id, true);
+    //        TableName("Transactions");
 
-            Columns(x =>
-            {
-                x.Column(y => y.Amount).WithName("Amount");
-                x.Column(y => y.BookingDate).WithName("BookingDate");
-            });
-        }
-    }
+    //        Columns(x =>
+    //        {
+    //            x.Column(y => y.Amount).WithName("Amount");
+    //            x.Column(y => y.BookingDate).WithName("BookingDate");
+    //        });
+    //    }
+    //}
     
-    public class CustomerMapping : Map<Customer>
-    {
-        public CustomerMapping()
-        {
-            PrimaryKey(k => k.Id, true);
-            TableName("Customer");
+    //public class CustomerMapping : Map<Customer>
+    //{
+    //    public CustomerMapping()
+    //    {
+    //        PrimaryKey(k => k.Id, true);
+    //        TableName("Customer");
 
-            Columns(x =>
-            {
-                x.Column(y => y.Name);
-                x.Column(c => c.Accounts).Ignore();
-                x.Column(c => c.Created);
-            });
-        }
-    }
+    //        Columns(x =>
+    //        {
+    //            x.Column(y => y.Name);
+    //            x.Column(c => c.Accounts).Ignore();
+    //            x.Column(c => c.Created);
+    //        });
+    //    }
+    //}
 
-    public class CustomerAccountMapping : Map<CustomerAccount>
-    {
-        public CustomerAccountMapping()
-        {
+    //public class CustomerAccountMapping : Map<CustomerAccount>
+    //{
+    //    public CustomerAccountMapping()
+    //    {
 
-            CompositePrimaryKey(k => k.CustomerId, k => k.AccountId);
+    //        CompositePrimaryKey(k => k.CustomerId, k => k.AccountId);
 
-            TableName("Customers_Accounts");
+    //        TableName("Customers_Accounts");
 
-            Columns(x =>
-            {
-                x.Column(y => y.CustomerId);
-                x.Column(y => y.AccountId);
-            });
-        }
-    }
+    //        Columns(x =>
+    //        {
+    //            x.Column(y => y.CustomerId);
+    //            x.Column(y => y.AccountId);
+    //        });
+    //    }
+    //}
 
 
 
@@ -164,11 +164,12 @@ namespace BankOr.Infrastructure
         {
             MapCustomers();
             MapAccounts();
+            CustomerAccountMapping();
         }
 
         private void MapAccounts()
         {
-            For<Account>().PrimaryKey(k => k.Id, true);
+            For<Account>().PrimaryKey(k => k.Id, false);
             For<Account>().TableName("Accounts");
 
             For<Account>().Columns(x =>
@@ -180,7 +181,7 @@ namespace BankOr.Infrastructure
 
         private void MapCustomers()
         {
-            For<Customer>().PrimaryKey(k => k.Id, true);
+            For<Customer>().PrimaryKey(k => k.Id, false);
 
             For<Customer>().TableName("Customers");
 
@@ -188,7 +189,22 @@ namespace BankOr.Infrastructure
             {
                 x.Column(y => y.Id);
                 x.Column(y => y.Name);
+                x.Column(y => y.Created);
                 x.Column(y => y.Accounts).Ignore();
+            });
+        }
+
+        public void CustomerAccountMapping()
+        {
+
+            For<CustomerAccount>().CompositePrimaryKey(k => k.CustomerId, k => k.AccountId);
+
+            For<CustomerAccount>().TableName("Customers_Accounts");
+
+            For<CustomerAccount>().Columns(x =>
+            {
+                x.Column(y => y.CustomerId);
+                x.Column(y => y.AccountId);
             });
         }
     }
