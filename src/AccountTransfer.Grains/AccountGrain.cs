@@ -18,33 +18,31 @@ namespace AccountTransfer.Grains
         public decimal Balance { get; set; }
 
         public IList<Transaction> Transactions { get; set; }
+        public string Name { get; set; }
     }
 
     [StorageProvider(ProviderName = "BankOrStorageProvider")]
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
-        private readonly ITransactionalState<AccountGrainState> _transactionalState;
-        private string _name;
 
-        public AccountGrain(
-            [TransactionalState("transactionalState")] ITransactionalState<AccountGrainState> balance)
+        public async Task Deposit(decimal amount)
         {
-            _transactionalState = balance ?? throw new ArgumentNullException(nameof(balance));
+            State.Balance += amount;
+
+            await WriteStateAsync();
         }
 
-        public async Task Deposit(uint amount)
+        public async Task Withdraw(decimal amount)
         {
-            await _transactionalState.PerformUpdate(x => x.Balance += amount);
+            State.Balance -= amount;
+
+            await WriteStateAsync();
         }
 
-        public async Task Withdraw(uint amount)
+        public Task<decimal> GetBalance()
         {
-            await _transactionalState.PerformUpdate(x => x.Balance - amount);
-        }
 
-        public async Task<decimal> GetBalance()
-        {
-            return await _transactionalState.PerformRead(x => x.Balance);
+            return Task.FromResult(State.Balance);
         }
 
         public async Task Owner(string userId)
@@ -52,17 +50,15 @@ namespace AccountTransfer.Grains
             await Task.CompletedTask;
         }
 
-        public Task SetName(string name)
+        public async Task SetName(string name)
         {
-            _name = name;
-
-
-            return Task.CompletedTask;
+            State.Name = name;
+            await WriteStateAsync();
         }
 
         public Task<string> GetName()
         {
-            return Task.FromResult(_name);
+            return Task.FromResult(State.Name);
         }
     }
 }

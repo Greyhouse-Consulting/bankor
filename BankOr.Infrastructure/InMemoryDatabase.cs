@@ -212,8 +212,6 @@ namespace BankOr.Infrastructure
     {
         public static DatabaseFactory DbFactory { get; private set; }
 
-      
-
         public static DatabaseFactory Setup()
         {
             var fluentConfig = FluentMappingConfiguration.Configure(new NPocoLabMappings());

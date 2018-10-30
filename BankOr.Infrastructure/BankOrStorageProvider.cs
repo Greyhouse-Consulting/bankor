@@ -62,10 +62,6 @@ namespace BankOr.Infrastructure
                         }
 
                     }
-                    else
-                    {
-                        state.AccountIds = new List<int>();
-                    }
                 }
             }
 
@@ -103,17 +99,30 @@ namespace BankOr.Infrastructure
                 {
                     var accountTransactions = db.FetchMultiple<Account, Transaction>(
                         "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                        r.GetPrimaryKeyLong()); 
+                        r.GetPrimaryKeyLong());
 
                     var account = accountTransactions.Item1.First();
 
-                    account.Balance = state.Balance;
-
-                    await db.UpdateAsync(account);
-
-                    foreach (var stateTransaction in state.Transactions.Where(t => t.Id < 0))
+                    if (account == null)
                     {
-                        await db.InsertAsync(stateTransaction);
+                        db.Insert(new Account
+                        {
+                            Id = r.GetPrimaryKeyLong(),
+                            Balance = 0,
+                            Name = state.Name,
+                        });
+                    }
+                    else
+                    {
+                        account.Balance = state.Balance;
+                        account.Name = state.Name;
+
+                        await db.UpdateAsync(account);
+
+                        foreach (var stateTransaction in state.Transactions.Where(t => t.Id < 0))
+                        {
+                            await db.InsertAsync(stateTransaction);
+                        }
                     }
                 }
             }
@@ -124,7 +133,7 @@ namespace BankOr.Infrastructure
                 var state = grainState.State as CustomerGrainState;
                 using (IDatabase db = BankorDbFactory.DbFactory.GetDatabase())
                 {
-                    var customerAccounts = db.FetchMultiple<Customer, int>(
+                    var customerAccounts = db.FetchMultiple<Customer, long>(
                         "SELECT * FROM CUSTOMERS WHERE ID = @0; SELECT AccountId FROM CUSTOMERS_ACCOUNTS WHERE CustomerId = @0;",
                         grainReference.GetPrimaryKeyLong());
 
@@ -136,22 +145,38 @@ namespace BankOr.Infrastructure
                     if (!customerAccounts.Item1.Any())
 
                     {
-                        db.Save<Customer>(new Customer
+                        try
                         {
-                            Name = state.Name,
-                            Created = true,
-                            Id = grainReference.GetPrimaryKeyLong()
-                        });
-                        state.Created = true;
+                            db.Save<Customer>(new Customer
+                            {
+                                Name = state.Name,
+                                Created = true,
+                                Id = grainReference.GetPrimaryKeyLong()
+                            });
+                            state.Created = true;
+                        }
+                        catch (Exception ex)
+                        {
+
+                            state.Created = false;
+                            throw;
+                        }
                     }
                     else
                     {
-                        var newAccounts = state.AccountIds.Except( customerAccounts.Item2 );
+                        var newAccounts = state
+                            .AccountGrains
+                            .Select(ag => ag.GetPrimaryKeyLong())
+                            .ToList()
+                            .Except(customerAccounts.Item2);
 
                         foreach (var newAccount in newAccounts)
                         {
                             db.Insert(new CustomerAccount
-                                {AccountId = newAccount, CustomerId = grainReference.GetPrimaryKeyLong()});
+                            {
+                                AccountId = newAccount,
+                                CustomerId = grainReference.GetPrimaryKeyLong()
+                            });
                         }
                     }
                 }

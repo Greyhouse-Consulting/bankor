@@ -24,10 +24,8 @@ namespace AccountTransfer.Grains
             EnsureCreated();
 
             var accountNames = new List<string>();
-            foreach (var accountId in State.AccountIds)
+            foreach (var account in State.AccountGrains)
             {
-                var account = GrainFactory.GetGrain<IAccountGrain>(accountId);
-
                 accountNames.Add(await account.GetName());
             }
 
@@ -41,7 +39,6 @@ namespace AccountTransfer.Grains
             EnsureCreated();
 
             var item = Math.Abs(Guid.NewGuid().GetHashCode());  
-            State.AccountIds.Add(item);
             var account = GrainFactory.GetGrain<IAccountGrain>(item);
             State.AccountGrains.Add(account);
             await WriteStateAsync();

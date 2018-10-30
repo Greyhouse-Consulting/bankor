@@ -6,10 +6,12 @@ namespace AccountTransfer.Grains
 {
     public class CustomerGrainState
     {
+        public CustomerGrainState()
+        {
+            AccountGrains = new List<IAccountGrain>();
+        }
+
         public string Name { get; set; }
-
-        public IList<int> AccountIds { get; set; }
-
         public bool Created { get; set; }
 
         public IList<IAccountGrain> AccountGrains { get; set; }

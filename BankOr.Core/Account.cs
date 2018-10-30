@@ -6,7 +6,7 @@ namespace BankOr.Core
 {
     public class Account
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
 
         public string Name { get; set; }
 

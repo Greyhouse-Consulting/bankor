@@ -5,11 +5,9 @@ namespace AccountTransfer.Interfaces.Grains
 {
     public interface IAccountGrain : IGrainWithIntegerKey
     {
-        [Transaction(TransactionOption.Create)]
-        Task Withdraw(uint amount);
+        Task Withdraw(decimal amount);
 
-        [Transaction(TransactionOption.Create)]
-        Task Deposit(uint amount);
+        Task Deposit(decimal amount);
 
         Task<decimal> GetBalance();
 

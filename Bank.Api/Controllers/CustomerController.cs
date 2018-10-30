@@ -29,10 +29,10 @@ namespace Bank.Api.Controllers
         }
 
         // GET
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("{id}")]
+        public IActionResult Get(long id)
         {
-            var customer = _clusterClient.GetGrain<ICustomerGrain>(200);
+            var customer = _clusterClient.GetGrain<ICustomerGrain>(id);
 
             return Ok(customer.GetPrimaryKey());
         }
