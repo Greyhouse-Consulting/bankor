@@ -127,7 +127,7 @@ namespace BankOr.Infrastructure
 
                         await db.UpdateAsync(account);
 
-                        foreach (var stateTransaction in state.Transactions.Where(t => t.Id < 0))
+                        foreach (var stateTransaction in state.Transactions.Where(t => t.Id <= 0))
                         {
                             await db.InsertAsync(stateTransaction);
                         }

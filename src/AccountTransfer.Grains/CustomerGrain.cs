@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AccountTransfer.Interfaces.Grains;
+using BankOr.Core;
 using BankOr.Core.Exceptions;
+using BankOr.Core.Models;
 using Orleans;
 using Orleans.Providers;
 
@@ -19,14 +21,17 @@ namespace AccountTransfer.Grains
             await WriteStateAsync();
         }
 
-        public async Task<IList<string>> GetAccounts()
+        public async Task<IList<AccountModel>> GetAccounts()
         {
             EnsureCreated();
 
-            var accountNames = new List<string>();
+            var accountNames = new List<AccountModel>();
             foreach (var account in State.AccountGrains)
             {
-                accountNames.Add(await account.GetName());
+                accountNames.Add(new AccountModel{
+                   Name = await account.GetName(),
+                    Id = account.GetPrimaryKeyLong()
+                });
             }
 
             return accountNames;

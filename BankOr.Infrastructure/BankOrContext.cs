@@ -19,7 +19,6 @@ namespace BankOr.Infrastructure
             modelBuilder.Entity<Transaction>().HasKey(k => k.Id);
 
             modelBuilder.Entity<Account>().HasKey(k => k.Id);
-            modelBuilder.Entity<Account>().HasMany(p => p.Transactions).WithOne(p => p.Account);
             modelBuilder.Entity<Account>().HasMany(p => p.Customers);
             
             modelBuilder.Entity<Customer>().HasKey(k => k.Id);

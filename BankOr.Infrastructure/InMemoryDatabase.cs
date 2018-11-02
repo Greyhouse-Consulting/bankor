@@ -165,6 +165,7 @@ namespace BankOr.Infrastructure
             MapCustomers();
             MapAccounts();
             CustomerAccountMapping();
+            TransactionMapping();
         }
 
         private void MapAccounts()
@@ -208,6 +209,19 @@ namespace BankOr.Infrastructure
             {
                 x.Column(y => y.CustomerId);
                 x.Column(y => y.AccountId);
+            });
+        }
+
+        public void TransactionMapping()
+        {
+            For<Transaction>().PrimaryKey(k => k.Id, true);
+            For<Transaction>().TableName("Transactions");
+
+            For<Transaction>().Columns(x =>
+            {
+                x.Column(y => y.Amount).WithName("Amount");
+                x.Column(y => y.BookingDate).WithName("BookingDate");
+                x.Column(y => y.AccountId).WithName("AccountId");
             });
         }
     }

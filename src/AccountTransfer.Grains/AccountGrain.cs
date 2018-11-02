@@ -35,19 +35,31 @@ namespace AccountTransfer.Grains
 
         public async Task Deposit(decimal amount)
         {
-            EnsureCreated();
-            
-            State.Balance += amount;
-
-            await WriteStateAsync();
+            EnsureCreated();            
+            await UpdateBalance(amount);
         }
 
         public async Task Withdraw(decimal amount)
         {
             EnsureCreated();
-            State.Balance -= amount;
+            await UpdateBalance(-amount); 
+        }
 
+        private async Task UpdateBalance(decimal amount)
+        {
+            State.Balance += amount;
+            State.Transactions.Add(CreateTransaction(amount));
             await WriteStateAsync();
+        }
+
+        private Transaction CreateTransaction(decimal amount)
+        {
+            return new Transaction
+            {
+                Amount = -amount,
+                BookingDate = DateTime.Now,
+                AccountId = this.GetPrimaryKeyLong()
+            };
         }
 
         public Task<decimal> GetBalance()

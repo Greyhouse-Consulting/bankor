@@ -9,6 +9,6 @@ namespace BankOr.Core
         public DateTime BookingDate { get; set; }
 
         public decimal Amount { get; set; }
-        public Account Account { get; set; }
+        public long AccountId { get; set; }
     }
 }
