@@ -49,25 +49,24 @@ namespace OrleansSiloHost
         {
 
             var db = BankorDbFactory.Create();
-            //var storageProvider = new BankOrStorageProvider(db);
 
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
                 .AddMemoryGrainStorage("DevStore")
-                .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, BankOrStorageProvider>())
+                .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
                 .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
                 .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
                 .ConfigureServices(s =>
-                    s.AddSingletonNamedService<IGrainStorage>("BankOrStorageProvider",
-                        (x, y) => new BankOrStorageProvider((IDatabase) (x.GetService(typeof(IDatabase))),
+                    s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
+                        (x, y) => new CustomerStorageProvider((IDatabase) (x.GetService(typeof(IDatabase))),
                             (IGrainFactory) x.GetService(typeof(IGrainFactory)))))
-                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
+                .ConfigureServices(s =>
+                    s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
+                        (x, y) => new CustomerStorageProvider((IDatabase) (x.GetService(typeof(IDatabase))),
+                            (IGrainFactory) x.GetService(typeof(IGrainFactory)))))                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
-                //.UseTransactions()
-                .AddMemoryGrainStorageAsDefault();
-
-
-            //               .UseTransactionalState();
+                .AddMemoryGrainStorageAsDefault()
+                .UseTransactions();
 
             var host = builder.Build();
             await host.StartAsync();

@@ -77,7 +77,7 @@ namespace OrleansClient
 
         //private static async Task DoClientWork(IClusterClient client)
         //{
-        //    IATMGrain atm = client.GetGrain<IATMGrain>(0);
+        //    IBankTransferGrain atm = client.GetGrain<IBankTransferGrain>(0);
         //    Guid from = Guid.NewGuid();
         //    Guid to = Guid.NewGuid();
         //    await atm.Transfer(from, to, 100);

@@ -11,7 +11,7 @@ using Orleans.Providers;
 namespace AccountTransfer.Grains
 {
 
-    [StorageProvider(ProviderName = "BankOrStorageProvider")]
+    [StorageProvider(ProviderName = "CustomerStorageProvider")]
     public class CustomerGrain : Grain<CustomerGrainState>, ICustomerGrain
     {
         public async Task HasNewName(string name)
@@ -30,7 +30,8 @@ namespace AccountTransfer.Grains
             {
                 accountNames.Add(new AccountModel{
                    Name = await account.GetName(),
-                    Id = account.GetPrimaryKeyLong()
+                    Id = account.GetPrimaryKeyLong(),
+                    Balance = await account.GetBalance()
                 });
             }
 
@@ -38,7 +39,6 @@ namespace AccountTransfer.Grains
         }
 
 
-        //[Transaction(TransactionOption.Supported)]
         public async Task CreateAccount(string name)
         {
             EnsureCreated();

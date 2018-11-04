@@ -4,9 +4,9 @@ using Orleans;
 
 namespace AccountTransfer.Interfaces.Grains
 {
-    public interface IATMGrain : IGrainWithIntegerKey
+    public interface IBankTransferGrain : IGrainWithIntegerKey
     {
         [Transaction(TransactionOption.Create)]
-        Task Transfer(Guid fromAccount, Guid toAccount, uint amountToTransfer);
+        Task Transfer(long fromAccount, long toAccount, decimal amountToTransfer);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AccountTransfer.Interfaces.Grains;
 using Orleans;
@@ -9,47 +8,49 @@ using BankOr.Core;
 using BankOr.Core.Exceptions;
 using Orleans.Providers;
 
-[assembly: GenerateSerializer(typeof(AccountTransfer.Grains.AccountGrainState))]
+
 
 namespace AccountTransfer.Grains
 {
-    [Serializable]
-    public class AccountGrainState
-    {
-
-        public AccountGrainState()
-        {
-            Transactions = new List<Transaction>();
-        }
-        public decimal Balance { get; set; }
-
-        public IList<Transaction> Transactions { get; set; }
-        public string Name { get; set; }
-
-        public bool Created { get; set; }
-    }
-
-    [StorageProvider(ProviderName = "BankOrStorageProvider")]
+    [StorageProvider(ProviderName = "AccountsStorageProvider")]
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
 
+       
+        private readonly ITransactionalState<AccountGrainStateTransactional> _transactionalState;
+
+
+
+        public AccountGrain([TransactionalState("transactionalState")] ITransactionalState<AccountGrainStateTransactional> transactionalState)
+        {
+            _transactionalState = transactionalState ?? throw new ArgumentNullException(nameof(transactionalState));
+        }
+
         public async Task Deposit(decimal amount)
         {
-            EnsureCreated();            
+            if (amount <= 0)
+                throw new ArgumentException("amount cannot be less or equal to zero when doing a deposit",
+                    nameof(amount));
+
+            await EnsureCreated();            
             await UpdateBalance(amount);
         }
 
         public async Task Withdraw(decimal amount)
         {
-            EnsureCreated();
+            await EnsureCreated();
             await UpdateBalance(-amount); 
         }
 
         private async Task UpdateBalance(decimal amount)
         {
-            State.Balance += amount;
-            State.Transactions.Add(CreateTransaction(amount));
-            await WriteStateAsync();
+            await _transactionalState.PerformUpdate(b =>
+            {
+                b.Balance += amount;
+                b.Transactions.Add( CreateTransaction(amount));
+            });
+        //    State.Transactions.Add(CreateTransaction(amount));
+        //    await WriteStateAsync();
         }
 
         private Transaction CreateTransaction(decimal amount)
@@ -58,20 +59,19 @@ namespace AccountTransfer.Grains
             {
                 Amount = -amount,
                 BookingDate = DateTime.Now,
-                AccountId = this.GetPrimaryKeyLong()
+                AccountId = this.GetPrimaryKeyLong(),
+                Id = Guid.NewGuid()
             };
         }
-
-        public Task<decimal> GetBalance()
+        public async Task<decimal> GetBalance()
         {
-            EnsureCreated();
 
-            return Task.FromResult(State.Balance);
+            return await _transactionalState.PerformRead(r => r.Balance);
         }
 
         public async Task Owner(string userId)
         {
-            EnsureCreated();
+            await EnsureCreated();
             await Task.CompletedTask;
         }
 
@@ -86,16 +86,18 @@ namespace AccountTransfer.Grains
             await WriteStateAsync();
         }
 
-        public Task<string> GetName()
+        public async Task<string> GetName()
         {
-            EnsureCreated();
-            return Task.FromResult(State.Name);
+            await EnsureCreated();
+            return State.Name;
         }
 
-        private void EnsureCreated()
+        private Task EnsureCreated()
         {
             if (!State.Created)
                 throw new GrainDoesNotExistException($"Customer with id '{this.GetPrimaryKeyLong()}' does not exist");
+
+            return Task.CompletedTask;
         }
     }
 }

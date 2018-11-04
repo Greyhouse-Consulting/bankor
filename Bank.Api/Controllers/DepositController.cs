@@ -19,17 +19,17 @@ namespace Bank.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(int customerId, int accountId, [FromBody] TransferRequest request)
+        public async Task<IActionResult> Post(int customerId, int accountId, [FromBody] DepositRequest request)
         {
             var account = _clusterClient.GetGrain<IAccountGrain>(accountId);
 
             await account.Deposit(request.Amount);
 
-            return Created(new Uri("/transactions/"), "200");
+            return Created("/transactions/", "2020202");
         }
     }
 
-    public class TransferRequest
+    public class DepositRequest
     {
         public decimal Amount { get; set; } 
     }

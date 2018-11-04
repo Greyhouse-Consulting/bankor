@@ -36,7 +36,7 @@ namespace BankOr.Infrastructure
             cmd.ExecuteNonQuery();
             cmd.CommandText = "CREATE TABLE Customers_Accounts(CustomerId INTEGER , AccountId INTEGER, PRIMARY KEY (CustomerId, AccountId));";
             cmd.ExecuteNonQuery();
-            cmd.CommandText = "CREATE TABLE Transactions(Id INTEGER PRIMARY KEY, Amount REAL, BookingDate DATE, AccountId INT);";
+            cmd.CommandText = "CREATE TABLE Transactions(Id STRING PRIMARY KEY, Amount REAL, BookingDate DATE, AccountId INT);";
             cmd.ExecuteNonQuery();
 
             //cmd.CommandText = "CREATE TABLE ExtraUserInfos(ExtraUserInfoId INTEGER PRIMARY KEY, UserId int, Email nvarchar(200), Children int);";
@@ -214,7 +214,7 @@ namespace BankOr.Infrastructure
 
         public void TransactionMapping()
         {
-            For<Transaction>().PrimaryKey(k => k.Id, true);
+            For<Transaction>().PrimaryKey(k => k.Id);
             For<Transaction>().TableName("Transactions");
 
             For<Transaction>().Columns(x =>

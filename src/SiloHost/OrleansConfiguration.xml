@@ -2,7 +2,7 @@
 <OrleansConfiguration xmlns="urn:orleans">
   <Globals>
     <StorageProviders>
-      <Provider Type="BankOr.Infrastructure.BankOrStorageProvider" SetName="DevStore"/>
+      <Provider Type="BankOr.Infrastructure.CustomerStorageProvider" SetName="DevStore"/>
     </StorageProviders>
   </Globals>
 </OrleansConfiguration>
