@@ -58,12 +58,12 @@ namespace OrleansSiloHost
                 .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                        (x, y) => new CustomerStorageProvider((IDatabase) (x.GetService(typeof(IDatabase))),
+                        (x, y) => new CustomerStorageProvider(db,
                             (IGrainFactory) x.GetService(typeof(IGrainFactory)))))
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
-                        (x, y) => new CustomerStorageProvider((IDatabase) (x.GetService(typeof(IDatabase))),
-                            (IGrainFactory) x.GetService(typeof(IGrainFactory)))))                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
+                        (x, y) => new AccountsStorageProvider(db)))
+                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
                 .AddMemoryGrainStorageAsDefault()
                 .UseTransactions();

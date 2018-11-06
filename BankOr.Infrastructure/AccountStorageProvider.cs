@@ -8,15 +8,14 @@ using Orleans.Providers;
 using Orleans.Runtime;
 using Orleans.Storage;
 using Orleans.Transactions;
-using Transaction = NPoco.Transaction;
 
 namespace BankOr.Infrastructure
 {
-    public class AccountStorageProvider : IStorageProvider
+    public class AccountsStorageProvider : IStorageProvider
     {
         private readonly IDatabase _database;
 
-        public AccountStorageProvider(IDatabase database)
+        public AccountsStorageProvider(IDatabase database)
         {
             _database = database;
         }

@@ -2,24 +2,17 @@
 using System.Threading.Tasks;
 using AccountTransfer.Interfaces.Grains;
 using Orleans;
-using Orleans.CodeGeneration;
 using Orleans.Transactions.Abstractions;
 using BankOr.Core;
 using BankOr.Core.Exceptions;
 using Orleans.Providers;
-
-
 
 namespace AccountTransfer.Grains
 {
     [StorageProvider(ProviderName = "AccountsStorageProvider")]
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
     {
-
-       
         private readonly ITransactionalState<AccountGrainStateTransactional> _transactionalState;
-
-
 
         public AccountGrain([TransactionalState("transactionalState")] ITransactionalState<AccountGrainStateTransactional> transactionalState)
         {
@@ -32,7 +25,10 @@ namespace AccountTransfer.Grains
                 throw new ArgumentException("amount cannot be less or equal to zero when doing a deposit",
                     nameof(amount));
 
-            await EnsureCreated();            
+            if (State.Name == "Krashkonto")
+                throw new Exception("Booooom!");
+
+            await EnsureCreated();
             await UpdateBalance(amount);
         }
 
@@ -49,8 +45,6 @@ namespace AccountTransfer.Grains
                 b.Balance += amount;
                 b.Transactions.Add( CreateTransaction(amount));
             });
-        //    State.Transactions.Add(CreateTransaction(amount));
-        //    await WriteStateAsync();
         }
 
         private Transaction CreateTransaction(decimal amount)
@@ -65,19 +59,7 @@ namespace AccountTransfer.Grains
         }
         public async Task<decimal> GetBalance()
         {
-
             return await _transactionalState.PerformRead(r => r.Balance);
-        }
-
-        public async Task Owner(string userId)
-        {
-            await EnsureCreated();
-            await Task.CompletedTask;
-        }
-
-        public async Task TryInit(string name)
-        {
-            await HasNewName(name);
         }
 
         public async Task HasNewName(string name)

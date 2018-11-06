@@ -14,8 +14,6 @@ namespace AccountTransfer.Interfaces.Grains
         [Transaction(TransactionOption.CreateOrJoin)]
         Task<decimal> GetBalance();
 
-        Task Owner(string userId);
-
         Task  HasNewName(string name);
         Task<string> GetName();
     }
