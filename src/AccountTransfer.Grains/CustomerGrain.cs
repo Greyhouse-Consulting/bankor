@@ -49,8 +49,17 @@ namespace AccountTransfer.Grains
             await account.HasNewName(name);
             State.AccountGrains.Add(account);
 
+            await NotifyNewAccount(item);
+
             await WriteStateAsync();
 
+        }
+
+        private async Task NotifyNewAccount(int item)
+        {
+            var streamProvider = GetStreamProvider("SMSProvider");
+            var stream = streamProvider.GetStream<int>(StreamIdGenerator.StreamId, "ACCOUNTID");
+            await stream.OnNextAsync(item);
         }
 
         public async Task TryInit(string name)

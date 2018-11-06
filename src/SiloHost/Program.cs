@@ -59,16 +59,19 @@ namespace OrleansSiloHost
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
                         (x, y) => new CustomerStorageProvider(db,
-                            (IGrainFactory) x.GetService(typeof(IGrainFactory)))))
+                            (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
                         (x, y) => new AccountsStorageProvider(db)))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole())
                 .AddMemoryGrainStorageAsDefault()
+                .AddSimpleMessageStreamProvider("SMSProvider")
+                .AddMemoryGrainStorage("PubSubStore")
                 .UseTransactions();
 
             var host = builder.Build();
+
             await host.StartAsync();
             return host;
         }

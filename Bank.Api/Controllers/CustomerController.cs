@@ -25,6 +25,8 @@ namespace Bank.Api.Controllers
 
             var customer = await customerManager.Create(request.Name);
 
+            var x = _clusterClient.GetGrain<IAccoutCreatedObserverGrain>(0);
+            await x.StartSubscribe();
             return Ok(customer.GetPrimaryKeyLong());
         }
 
