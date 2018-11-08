@@ -12,7 +12,7 @@ namespace AccountTransfer.Grains
 
     public interface INewAccountReceiver 
     {
-        void NewAccount(int id);
+        Task NewAccount(int id);
     }
 
     [StatelessWorker]
@@ -21,16 +21,16 @@ namespace AccountTransfer.Grains
     {
         protected internal IAsyncStream<int> Stream;
 
-        public void NewAccount(int id)
+        public Task NewAccount(int id)
         {
-            
+            return Task.CompletedTask;
         }
 
         public async Task StartSubscribe()
         {
             var streamProvider = GetStreamProvider("SMSProvider");
             Stream = streamProvider.GetStream<int>(StreamIdGenerator.StreamId, "ACCOUNTID");
-            await Stream.SubscribeAsync(async (a, token) => NewAccount(a));
+            await Stream.SubscribeAsync(async (a, token) => await NewAccount(a));
         }
     }
 }

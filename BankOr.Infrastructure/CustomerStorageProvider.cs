@@ -79,7 +79,7 @@ namespace BankOr.Infrastructure
                 {
                     try
                     {
-                        _database.Save<Customer>(new Customer
+                        await _database.InsertAsync<Customer>(new Customer
                         {
                             Name = state.Name,
                             Created = true,
@@ -104,7 +104,7 @@ namespace BankOr.Infrastructure
 
                     foreach (var newAccount in newAccounts)
                     {
-                        _database.Insert(new CustomerAccount
+                        await _database.InsertAsync(new CustomerAccount
                         {
                             AccountId = newAccount,
                             CustomerId = grainReference.GetPrimaryKeyLong()
