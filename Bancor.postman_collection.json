@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "ed4375fb-750e-4009-94e0-d9cc7f23e7f7",
+		"name": "Bankor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:54600/api/customers/182105483/accounts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:54600/api/customers/182105483/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "54600",
+					"path": [
+						"api",
+						"customers",
+						"182105483",
+						"accounts"
+					]
+				},
+				"description": "Get all account for a speceific user"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:54600/api/customers/182105483/accounts",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\" : \"Krashkonto\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:54600/api/customers/182105483/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "54600",
+					"path": [
+						"api",
+						"customers",
+						"182105483",
+						"accounts"
+					]
+				},
+				"description": "Create account for customer"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:54600/api/customers/",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\" : \"Kalle\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:54600/api/customers/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "54600",
+					"path": [
+						"api",
+						"customers",
+						""
+					]
+				},
+				"description": "Create customer"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:54600/api/customers/1788505714/accounts/1467362697/transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"amount\" : \"2000.11\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:54600/api/customers/1788505714/accounts/1467362697/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "54600",
+					"path": [
+						"api",
+						"customers",
+						"1788505714",
+						"accounts",
+						"1467362697",
+						"transfer"
+					]
+				},
+				"description": "Make single account transaction"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:54600/api/transfers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"fromAccount\": \"86989266\",\n\t\"toAccount\" : \"549992635\",\n\t\"amount\" : \"2000.11\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:54600/api/transfers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "54600",
+					"path": [
+						"api",
+						"transfers"
+					]
+				},
+				"description": "Make account -> acount transaction"
+			},
+			"response": []
+		}
+	]
+}
