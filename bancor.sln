@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C202E56-5082-4C00-9438-E0DFAAEC9326}"
+	ProjectSection(SolutionItems) = preProject
+		BuildAndRun.ps1 = BuildAndRun.ps1
+		BuildAndRun.sh = BuildAndRun.sh
+		NuGet.Config = NuGet.Config
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Api", "src\Bancor.Api\Bancor.Api.csproj", "{D8CB5AA5-7DAA-4AB9-9BD2-EE69F961DC03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Core", "src\Bancor.Core\Bancor.Core.csproj", "{CEF56D7B-C5EB-4B58-A8AF-5BB6F46E92B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Infrastructure", "src\Bancor.Infrastructure\Bancor.Infrastructure.csproj", "{42E0F302-6F59-44DB-B075-C55CA78AF1A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Infrastructure.Tests", "src\Bancor.Infrastructure.Tests\Bancor.Infrastructure.Tests.csproj", "{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{727DFFE6-BEDE-458D-B960-0BF355E4A52C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Integration.Tests", "src\Bancor.Integration.Tests\Bancor.Integration.Tests.csproj", "{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.OrleansClient", "src\Bancor.OrleansClient\Bancor.OrleansClient.csproj", "{46D50CAE-24DA-470E-AEF0-B96A8082C0EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.SiloHost", "src\Bancor.SiloHost\Bancor.SiloHost.csproj", "{F6FC046C-E390-4161-8257-315042062A0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bankor.Core.Grains", "src\Bankor.Core.Grains\Bankor.Core.Grains.csproj", "{9EFDEA81-8F31-40DF-A993-93655EAB09D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Core.Grains.Interfaces", "src\Bancor.Core.Grains.Interfaces\Bancor.Core.Grains.Interfaces.csproj", "{153C5D76-8A62-4FB2-91B6-50073BE92782}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8CB5AA5-7DAA-4AB9-9BD2-EE69F961DC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8CB5AA5-7DAA-4AB9-9BD2-EE69F961DC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8CB5AA5-7DAA-4AB9-9BD2-EE69F961DC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8CB5AA5-7DAA-4AB9-9BD2-EE69F961DC03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEF56D7B-C5EB-4B58-A8AF-5BB6F46E92B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEF56D7B-C5EB-4B58-A8AF-5BB6F46E92B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEF56D7B-C5EB-4B58-A8AF-5BB6F46E92B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEF56D7B-C5EB-4B58-A8AF-5BB6F46E92B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42E0F302-6F59-44DB-B075-C55CA78AF1A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42E0F302-6F59-44DB-B075-C55CA78AF1A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42E0F302-6F59-44DB-B075-C55CA78AF1A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42E0F302-6F59-44DB-B075-C55CA78AF1A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46D50CAE-24DA-470E-AEF0-B96A8082C0EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46D50CAE-24DA-470E-AEF0-B96A8082C0EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46D50CAE-24DA-470E-AEF0-B96A8082C0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46D50CAE-24DA-470E-AEF0-B96A8082C0EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6FC046C-E390-4161-8257-315042062A0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6FC046C-E390-4161-8257-315042062A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6FC046C-E390-4161-8257-315042062A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6FC046C-E390-4161-8257-315042062A0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EFDEA81-8F31-40DF-A993-93655EAB09D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EFDEA81-8F31-40DF-A993-93655EAB09D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EFDEA81-8F31-40DF-A993-93655EAB09D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EFDEA81-8F31-40DF-A993-93655EAB09D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1} = {727DFFE6-BEDE-458D-B960-0BF355E4A52C}
+		{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E} = {727DFFE6-BEDE-458D-B960-0BF355E4A52C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {770CE15D-FCF4-4F37-BBC3-B62DEEFFB973}
+	EndGlobalSection
+EndGlobal
