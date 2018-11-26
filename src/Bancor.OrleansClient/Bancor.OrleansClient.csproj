@@ -14,7 +14,4 @@
     <PackageReference Include="Microsoft.Orleans.Core" Version="2.1.2" />
     <PackageReference Include="Microsoft.Orleans.Transactions" Version="2.1.2" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AccountTransfer.Interfaces\AccountTransfer.Interfaces.csproj" />
-  </ItemGroup>
 </Project>
