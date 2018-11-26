@@ -26,7 +26,7 @@ namespace Bancor.SiloHost
         {
             try
             {
-                SqlServiceDatabaseFactory.Upgrade();
+                BankorDbFactory.Upgrade();
 
                 var host = await StartSilo();
                 Console.WriteLine("Press Enter to terminate...");

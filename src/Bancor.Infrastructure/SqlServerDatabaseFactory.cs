@@ -8,7 +8,7 @@ using NPoco.FluentMappings;
 
 namespace Bancor.Infrastructure
 {
-    public class SqlServiceDatabaseFactory
+    public class SqlServerDatabaseFactory
     {
         private static DatabaseFactory _factory = null;
         protected internal static string ServerLocalhostDatabaseBancorTrustedConnectionTrue = "Server=localhost;Database=bancor;Trusted_Connection=True;";
@@ -57,7 +57,6 @@ namespace Bancor.Infrastructure
         {
             var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
 
-            // Execute the migrations
             runner.MigrateUp();
         }
 
@@ -68,7 +67,7 @@ namespace Bancor.Infrastructure
                 .ConfigureRunner(rb => rb
                     .AddSqlServer2016()
                     .WithGlobalConnectionString(ServerLocalhostDatabaseBancorTrustedConnectionTrue)
-                    .ScanIn(typeof(SqlServiceDatabaseFactory).Assembly)
+                    .ScanIn(typeof(SqlServerDatabaseFactory).Assembly)
                     .For.Migrations()
                 )
                 .BuildServiceProvider();
