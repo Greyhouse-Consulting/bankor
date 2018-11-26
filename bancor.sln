@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bankor.Core.Grains", "src\B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Core.Grains.Interfaces", "src\Bancor.Core.Grains.Interfaces\Bancor.Core.Grains.Interfaces.csproj", "{153C5D76-8A62-4FB2-91B6-50073BE92782}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bancor.Core.Tests", "Bancor.Core.Tests\Bancor.Core.Tests.csproj", "{D3200F91-0CCE-4622-AE83-08C95E9128EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{153C5D76-8A62-4FB2-91B6-50073BE92782}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3200F91-0CCE-4622-AE83-08C95E9128EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3200F91-0CCE-4622-AE83-08C95E9128EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3200F91-0CCE-4622-AE83-08C95E9128EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3200F91-0CCE-4622-AE83-08C95E9128EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{AC06EEB1-F2C5-4A9D-9052-8BFA09517DE1} = {727DFFE6-BEDE-458D-B960-0BF355E4A52C}
 		{5AA396AF-FA85-41B9-93C6-BB91D34C8E4E} = {727DFFE6-BEDE-458D-B960-0BF355E4A52C}
+		{D3200F91-0CCE-4622-AE83-08C95E9128EE} = {727DFFE6-BEDE-458D-B960-0BF355E4A52C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {770CE15D-FCF4-4F37-BBC3-B62DEEFFB973}
