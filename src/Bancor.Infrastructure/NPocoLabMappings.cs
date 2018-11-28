@@ -22,7 +22,6 @@ namespace Bancor.Infrastructure
             {
                 x.Column(y => y.Balance).WithName("Balance");
                 x.Column(y => y.Name).WithName("Name");
-                x.Column(y => y.Created).WithName("Created");
                 x.Column(y => y.Transactions).Ignore();
                 x.Column(y => y.Customers).Ignore();
             });
@@ -38,7 +37,6 @@ namespace Bancor.Infrastructure
             {
                 x.Column(y => y.Id);
                 x.Column(y => y.Name);
-                x.Column(y => y.Created);
                 x.Column(y => y.Accounts).Ignore();
             });
         }

@@ -12,6 +12,5 @@ namespace Bancor.Core
 
         public IList<Transaction> Transactions { get; set; }
         public IList<Customer> Customers { get; set; }
-        public bool Created { get; set; }
     }
 }

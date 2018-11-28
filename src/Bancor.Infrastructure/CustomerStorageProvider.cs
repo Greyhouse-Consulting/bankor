@@ -36,20 +36,21 @@ namespace Bancor.Infrastructure
 
         public string Name => "CustomerStorageProvider";
 
-        public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
+        public async Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
 
             if (grainType == typeof(CustomerGrain).FullName)
             {
                 var state = grainState.State as CustomerGrainState;
 
-                var account = _database.SingleOrDefault<Customer>(grainReference.GetPrimaryKeyString());
+                var customer = _database.SingleOrDefault<Customer>(grainReference.GetPrimaryKeyString());
 
-                if (account != null)
+                if (customer != null)
                 {
-                    state.Name = account.Name;
-
-                    var customerAccounts = _database.Fetch<CustomerAccount>("SELECT * FROM Customers_Accounts WHERE CustomerId = '@0'", grainReference.GetPrimaryKeyLong());
+                    state.Name = customer.Name;
+                    state.Created = true;
+                    
+                    var customerAccounts = await _database.FetchAsync<CustomerAccount>("SELECT CustomerId, AccountId FROM Customers_Accounts WHERE CustomerId = @0", grainReference.GetPrimaryKeyLong());
 
                     foreach (var customerAccount in customerAccounts)
                     {
@@ -58,8 +59,6 @@ namespace Bancor.Infrastructure
 
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
@@ -82,7 +81,6 @@ namespace Bancor.Infrastructure
                         await _database.InsertAsync<Customer>(new Customer
                         {
                             Name = state.Name,
-                            Created = true,
                             Id = grainReference.GetPrimaryKeyLong()
                         });
                         state.Created = true;

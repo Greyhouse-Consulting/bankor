@@ -20,7 +20,7 @@ namespace Bancor.Infrastructure
             _database = database;
         }
 
-        public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
+        public async Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
             if (grainType == "Bancor.Core.Grains.AccountGrain,Bancor.Core.Grains-transactionalState")
             {
@@ -40,18 +40,15 @@ namespace Bancor.Infrastructure
             {
                 var state = grainState.State as AccountGrainState;
 
-                var accountTransactions = _database.FetchMultiple<Account, Core.Transaction>(
-                    "SELECT * FROM ACCOUNTS WHERE ID = '@0'; SELECT * FROM TRANSACTIONS WHERE AccountId = '@0';",
-                    grainReference.GetPrimaryKey());
+                var account = await _database.SingleOrDefaultByIdAsync<Account>(
+                    grainReference.GetPrimaryKeyLong());
 
-                if (accountTransactions.Item1.Any())
+                if (account != null)
                 {
-                    state.Name = accountTransactions.Item1.First().Name;
-                    state.Created = accountTransactions.Item1.First().Created;
+                    state.Name = account.Name;
+                    state.Created = true;
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
@@ -73,7 +70,6 @@ namespace Bancor.Infrastructure
                         {
                             Id = grainReference.GetPrimaryKeyLong(),
                             Balance = 0,
-                            Created = true
                         });
                     }
                     else
@@ -105,14 +101,12 @@ namespace Bancor.Infrastructure
                             Id = grainReference.GetPrimaryKeyLong(),
                             Balance = 0,
                             Name = state.Name,
-                            Created = true
                         });
                         state.Created = true;
                     }
                     else
                     {
                         account.Name = state.Name;
-                        account.Created = state.Created;
                         await _database.UpdateAsync(account);
                     }
             }
