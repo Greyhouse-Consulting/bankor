@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Bancor.Core;
+using Bancor.Core.Grains;
 using Bancor.Core.Grains.Interfaces.Grains;
-using Bankor.Core.Grains;
 using Microsoft.Extensions.Logging;
 using NPoco;
 using Orleans;
@@ -39,7 +39,7 @@ namespace Bancor.Infrastructure
         public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
 
-            if (grainType == "AccountTransfer.Grains.CustomerGrain")
+            if (grainType == typeof(CustomerGrain).FullName)
             {
                 var state = grainState.State as CustomerGrainState;
 
@@ -65,7 +65,7 @@ namespace Bancor.Infrastructure
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
 
-            if (grainType == "AccountTransfer.Grains.CustomerGrain")
+            if (grainType == typeof(CustomerGrain).FullName)
             {
 
                 var state = grainState.State as CustomerGrainState;

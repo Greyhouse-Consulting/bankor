@@ -3,7 +3,7 @@ using Bancor.Core.Grains.Interfaces.Grains;
 using Orleans;
 using Orleans.Concurrency;
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
     [StatelessWorker]
     public class BankTransferGrain : Grain, IBankTransferGrain

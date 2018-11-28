@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bancor.Core;
 using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Bancor.Core.Models;
 using Orleans;
 using Orleans.Providers;
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
 
     [StorageProvider(ProviderName = "CustomerStorageProvider")]

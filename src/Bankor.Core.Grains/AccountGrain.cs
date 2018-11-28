@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Bancor.Core;
 using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Orleans;
 using Orleans.Providers;
 using Orleans.Transactions.Abstractions;
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
     [StorageProvider(ProviderName = "AccountsStorageProvider")]
     public class AccountGrain : Grain<AccountGrainState>, IAccountGrain

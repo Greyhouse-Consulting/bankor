@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bancor.Core\Bancor.Core.csproj" />
-    <ProjectReference Include="..\Bankor.Core.Grains\Bankor.Core.Grains.csproj" />
+    <ProjectReference Include="..\Bankor.Core.Grains\Bancor.Core.Grains.csproj" />
   </ItemGroup>
 
   <ItemGroup>

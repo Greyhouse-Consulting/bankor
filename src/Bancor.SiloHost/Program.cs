@@ -26,7 +26,7 @@ namespace Bancor.SiloHost
         {
             try
             {
-                BankorDbFactory.Upgrade();
+                SqlServerDatabaseFactory.Upgrade();
 
                 var host = await StartSilo();
                 Console.WriteLine("Press Enter to terminate...");
@@ -46,7 +46,7 @@ namespace Bancor.SiloHost
         private static async Task<ISiloHost> StartSilo()
         {
 
-            var db = BankorDbFactory.Create();
+            var db = SqlServerDatabaseFactory.Create();
 
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()

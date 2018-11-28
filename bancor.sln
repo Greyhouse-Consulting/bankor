@@ -27,11 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.OrleansClient", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.SiloHost", "src\Bancor.SiloHost\Bancor.SiloHost.csproj", "{F6FC046C-E390-4161-8257-315042062A0D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bankor.Core.Grains", "src\Bankor.Core.Grains\Bankor.Core.Grains.csproj", "{9EFDEA81-8F31-40DF-A993-93655EAB09D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Core.Grains", "src\Bankor.Core.Grains\Bancor.Core.Grains.csproj", "{9EFDEA81-8F31-40DF-A993-93655EAB09D7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Core.Grains.Interfaces", "src\Bancor.Core.Grains.Interfaces\Bancor.Core.Grains.Interfaces.csproj", "{153C5D76-8A62-4FB2-91B6-50073BE92782}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bancor.Core.Tests", "Bancor.Core.Tests\Bancor.Core.Tests.csproj", "{D3200F91-0CCE-4622-AE83-08C95E9128EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bancor.Core.Tests", "Bancor.Core.Tests\Bancor.Core.Tests.csproj", "{D3200F91-0CCE-4622-AE83-08C95E9128EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

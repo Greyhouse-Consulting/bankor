@@ -13,7 +13,7 @@ namespace Bancor.Infrastructure
         private static DatabaseFactory _factory = null;
         protected internal static string ServerLocalhostDatabaseBancorTrustedConnectionTrue = "Server=localhost;Database=bancor;Trusted_Connection=True;";
 
-        public Database Create()
+        public static Database Create()
         {
             EnsureDatabaseFactoryCreated();
 
@@ -38,7 +38,11 @@ namespace Bancor.Infrastructure
 
         public static DbConnection CreateConnection()
         {
-            return new SqlConnection(ServerLocalhostDatabaseBancorTrustedConnectionTrue);
+            var connection = new SqlConnection(ServerLocalhostDatabaseBancorTrustedConnectionTrue);
+
+            connection.Open();
+
+            return connection;
         }
 
 

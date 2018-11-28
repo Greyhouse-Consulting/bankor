@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bancor.Core.Grains.Interfaces.Grains;
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
     public class CustomerGrainState
     {

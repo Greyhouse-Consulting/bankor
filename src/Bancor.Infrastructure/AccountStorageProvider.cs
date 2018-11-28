@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Bancor.Core;
-using Bankor.Core.Grains;
+using Bancor.Core.Grains;
 using NPoco;
 using Orleans;
 using Orleans.Providers;
@@ -22,7 +22,7 @@ namespace Bancor.Infrastructure
 
         public Task ReadStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
-            if (grainType == "AccountTransfer.Grains.AccountGrain,AccountTransfer.Grains-transactionalState")
+            if (grainType == "Bancor.Core.Grains.AccountGrain,Bancor.Core.Grains-transactionalState")
             {
                 var state = grainState.State as TransactionalStateRecord<AccountGrainStateTransactional>;
 
@@ -36,7 +36,7 @@ namespace Bancor.Infrastructure
                     state.CommittedState.Transactions = accountTransactions.Item2;
                 }
             }
-            else if (grainType.Contains("AccountTransfer.Grains.AccountGrain"))
+            else if (grainType.Contains("Bancor.Core.Grains.AccountGrain"))
             {
                 var state = grainState.State as AccountGrainState;
 
@@ -56,7 +56,7 @@ namespace Bancor.Infrastructure
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
-            if (grainType == "AccountTransfer.Grains.AccountGrain,AccountTransfer.Grains-transactionalState")
+            if (grainType == "Bancor.Core.Grains.AccountGrain,Bancor.Core.Grains-transactionalState")
             {
 
                 var state = grainState.State as TransactionalStateRecord<AccountGrainStateTransactional>;
@@ -88,7 +88,7 @@ namespace Bancor.Infrastructure
                         }
                     }
             }
-            else if (grainType == "AccountTransfer.Grains.AccountGrain")
+            else if (grainType == "Bancor.Core.Grains.AccountGrain")
             {
                 var state = grainState.State as AccountGrainState;
 

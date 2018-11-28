@@ -1,10 +1,10 @@
 ﻿using System;
-using Bankor.Core.Grains;
+using Bancor.Core.Grains;
 using Orleans.CodeGeneration;
 
 [assembly: GenerateSerializer(typeof(AccountGrainState))]
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
 
     [Serializable]

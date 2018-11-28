@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bancor.Core;
-using Bankor.Core.Grains;
+using Bancor.Core.Grains;
 using Orleans.CodeGeneration;
 
 [assembly: GenerateSerializer(typeof(AccountGrainStateTransactional))]
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
     [Serializable]
     public class AccountGrainStateTransactional

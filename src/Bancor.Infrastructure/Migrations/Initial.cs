@@ -10,13 +10,13 @@ namespace Bancor.Infrastructure.Migrations
             Create.Table("Customers")
                 .WithColumn("Id").AsInt64().PrimaryKey()
                 .WithColumn("Name").AsString()
-                .WithColumn("Created").AsDateTime();
+                .WithColumn("Created").AsBoolean();
 
             Create.Table("Accounts")
                 .WithColumn("Id").AsInt64().PrimaryKey()
                 .WithColumn("Name").AsString()
                 .WithColumn("Balance").AsDecimal()
-                .WithColumn("Created").AsDateTime();
+                .WithColumn("Created").AsBoolean();
 
             Create.Table("Customers_Accounts")
                 .WithColumn("CustomerId").AsInt64().PrimaryKey()
@@ -25,7 +25,7 @@ namespace Bancor.Infrastructure.Migrations
             Create.Table("Transactions")
                 .WithColumn("Id").AsGuid().PrimaryKey()
                 .WithColumn("AccountId").AsInt64()
-                .WithColumn("Created").AsDateTime()
+                .WithColumn("Created").AsBoolean()
                 .WithColumn("Amount").AsDecimal();
 
             //Create.ForeignKey("customer_accounts_FK")

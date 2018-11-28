@@ -2,7 +2,7 @@
 using Bancor.Core.Grains.Interfaces.Grains;
 using Orleans;
 
-namespace Bankor.Core.Grains
+namespace Bancor.Core.Grains
 {
     public class BankAccountGrain : Grain, IBankAccountGrain
     {
