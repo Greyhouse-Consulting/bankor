@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
@@ -27,7 +28,7 @@ namespace Bancor.Core.Tests
             var interest = dayByDayInterestCalculator.Calculate(transactions);
 
             // Assert
-            interest.Should().Be(200, "Interest should calculated correctly");
+            interest.Should().Be(200, "Interest should be calculated correctly");
         }
 
 
@@ -70,23 +71,33 @@ namespace Bancor.Core.Tests
 
         public decimal Calculate(List<Transaction> transactions)
         {
-
-            var summedTransactionsPerDay = transactions.GroupBy(a => a.BookingDate.ToShortDateString());
+            var summedTransactionsPerDay = transactions.GroupBy(a => a.BookingDate.ToShortDateString()).ToList();
 
             decimal aggregatedInterest = 0;
-            int dayOffset = 0;
 
-            foreach (var dayTransactions in summedTransactionsPerDay.OrderBy(a => a.Key))
+            var currentTransaction = summedTransactionsPerDay.Take(1).First();
+            summedTransactionsPerDay.RemoveAt(0);
+
+            while(summedTransactionsPerDay.Any())
             {
-
-                dayOffset = dayTransactions.First().BookingDate.DayOfYear + 1 - dayOffset;
-
-                var daySum = dayTransactions.Sum(x => x.Amount);
-
-                aggregatedInterest += ((daySum * _interestRate / 100 / 365) * dayOffset);
+                var nextTransaction = summedTransactionsPerDay.Take(1).First();
+                summedTransactionsPerDay.RemoveAt(0);
+                aggregatedInterest += Calculate(currentTransaction.ToList(), nextTransaction.First().BookingDate.DayOfYear);
+                currentTransaction = nextTransaction;
             }
 
+            aggregatedInterest += Calculate(currentTransaction.ToList(), 365);
+
             return aggregatedInterest;
+        }
+
+        private decimal Calculate(List<Transaction> currentTransactions, int v)
+        {
+            var totalAmount = currentTransactions.Sum(a => a.Amount);
+
+            var numberOfDaysInPeriod = v - currentTransactions.First().BookingDate.DayOfYear;
+
+            return ((totalAmount * _interestRate / 100 / 365) * numberOfDaysInPeriod);
         }
     }
 }
