@@ -112,11 +112,15 @@ namespace Bancor.Infrastructure
             return DbFactory;
         }
 
-        public static Database Create()
+        public static IDatabase Create()
         {
             var factory = Setup();
 
-            return factory.GetDatabase();
+            var db = factory.GetDatabase();
+
+            db.Connection.Open();
+
+            return db;
         }
 
         public static DbConnection CreateConnection()
