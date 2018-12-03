@@ -40,13 +40,21 @@ namespace Bancor.Infrastructure
             {
                 var state = grainState.State as AccountGrainState;
 
-                var account = await _database.SingleOrDefaultByIdAsync<Account>(
-                    grainReference.GetPrimaryKeyLong());
-
-                if (account != null)
+                try
                 {
-                    state.Name = account.Name;
-                    state.Created = true;
+                    var account = await _database.SingleOrDefaultByIdAsync<Account>(
+                                grainReference.GetPrimaryKeyLong());
+
+                    if (account != null)
+                    {
+                        state.Name = account.Name;
+                        state.Created = true;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+
+                    throw;
                 }
             }
         }
@@ -58,43 +66,45 @@ namespace Bancor.Infrastructure
 
                 var state = grainState.State as TransactionalStateRecord<AccountGrainStateTransactional>;
 
-                    var accountTransactions = _database.FetchMultiple<Account, Core.Transaction>(
-                        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                        grainReference.GetPrimaryKeyLong());
+                var accountTransactions = _database.FetchMultiple<Account, Core.Transaction>(
+                    "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
+                    grainReference.GetPrimaryKeyLong());
 
-                    var account = accountTransactions.Item1.FirstOrDefault();
+                var account = accountTransactions.Item1.FirstOrDefault();
 
-                    if (account == null)
+                if (account == null)
+                {
+                    _database.Insert(new Account
                     {
-                        _database.Insert(new Account
-                        {
-                            Id = grainReference.GetPrimaryKeyLong(),
-                            Balance = 0,
-                        });
-                    }
-                    else
+                        Id = grainReference.GetPrimaryKeyLong(),
+                        Balance = 0,
+                    });
+                }
+                else
+                {
+                    account.Balance = state.CommittedState.Balance;
+
+                    await _database.UpdateAsync(account);
+
+                    foreach (var stateTransaction in state.CommittedState.Transactions.Where(t => t == null))
                     {
-                        account.Balance = state.CommittedState.Balance;
-
-                        await _database.UpdateAsync(account);
-
-                        foreach (var stateTransaction in state.CommittedState.Transactions.Where(t => t == null))
-                        {
-                            await _database.InsertAsync(stateTransaction);
-                        }
+                        await _database.InsertAsync(stateTransaction);
                     }
+                }
             }
             else if (grainType == "Bancor.Core.Grains.AccountGrain")
             {
                 var state = grainState.State as AccountGrainState;
 
-                    var accountTransactions = _database.FetchMultiple<Account, Core.Transaction>(
-                        "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
-                        grainReference.GetPrimaryKeyLong());
+                var accountTransactions = _database.FetchMultiple<Account, Core.Transaction>(
+                    "SELECT * FROM ACCOUNTS WHERE ID = @0; SELECT * FROM TRANSACTIONS WHERE AccountId = @0;",
+                    grainReference.GetPrimaryKeyLong());
 
-                    var account = accountTransactions.Item1.FirstOrDefault();
+                var account = accountTransactions.Item1.FirstOrDefault();
 
-                    if (account == null)
+                if (account == null)
+                {
+                    try
                     {
                         _database.Insert(new Account
                         {
@@ -102,13 +112,19 @@ namespace Bancor.Infrastructure
                             Balance = 0,
                             Name = state.Name,
                         });
-                        state.Created = true;
                     }
-                    else
+                    catch (System.Exception ex)
                     {
-                        account.Name = state.Name;
-                        await _database.UpdateAsync(account);
+
+                        throw;
                     }
+                    state.Created = true;
+                }
+                else
+                {
+                    account.Name = state.Name;
+                    await _database.UpdateAsync(account);
+                }
             }
         }
 

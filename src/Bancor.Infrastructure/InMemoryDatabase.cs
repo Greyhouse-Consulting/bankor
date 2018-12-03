@@ -94,7 +94,7 @@ namespace Bancor.Infrastructure
 
     public static class BankorDbFactory
     {
-        internal static string SqlLiteConnectionString = "Data Source=:memory:";
+        internal static string SqlLiteConnectionString = "Data Source=sharedmemdb;Mode=Memory;Cache=Shared";
         public static DatabaseFactory DbFactory { get; private set; }
 
         public static DatabaseFactory Setup()
@@ -153,8 +153,7 @@ namespace Bancor.Infrastructure
                     .AddSQLite()
                     .WithGlobalConnectionString(SqlLiteConnectionString)
                     .ScanIn(typeof(SqlServerDatabaseFactory).Assembly)
-                    .For.Migrations()
-                )
+                    .For.Migrations())
                 .BuildServiceProvider();
         }
     }
