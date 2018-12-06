@@ -21,5 +21,10 @@ namespace Bancor.Infrastructure.Repository
 
             return customer.Id;
         }
+
+        public async Task<Customer> Get(int id)
+        {
+            return await _database.SingleByIdAsync<Customer>(id);
+        }
     }
 }

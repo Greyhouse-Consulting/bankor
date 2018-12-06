@@ -26,8 +26,13 @@ namespace Bancor.Integration.Tests
         [Fact]
         public async void Should_Store_One_Account()
         {
-
             // Arrange
+
+            var dbName = Guid.NewGuid().ToString();
+            var db = BankorDbFactory.Create(dbName);
+            BankorDbFactory.Upgrade(dbName);
+            SiloConfigurator.Db = db;
+
             var builder = new TestClusterBuilder(1);
 
             builder.AddSiloBuilderConfigurator<SiloConfigurator>();
@@ -38,7 +43,6 @@ namespace Bancor.Integration.Tests
 
             var grain = testCluster.GrainFactory.GetGrain<IAccountGrain>(2000);
 
-
             // Act
             await grain.HasNewName("Savings account");
             var name = await grain.GetName();
@@ -48,26 +52,23 @@ namespace Bancor.Integration.Tests
         }
     }
 
-    public class SiloConfigurator  : ISiloBuilderConfigurator
+    public class SiloConfigurator : ISiloBuilderConfigurator
     {
+        public static IDatabase Db { get; set; }
         public void Configure(ISiloHostBuilder hostBuilder)
         {
-            var db = BankorDbFactory.Create();
-            db.Connection.Open();
-
-            BankorDbFactory.Upgrade();
 
             hostBuilder
                 .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
                 .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
-                .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
+                .ConfigureServices(s => s.TryAddSingleton<IDatabase>(Db))
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                        (x, y) => new CustomerStorageProvider(db,
+                        (x, y) => new CustomerStorageProvider(Db,
                             (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
                 .ConfigureServices(s =>
                     s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
-                        (x, y) => new AccountsStorageProvider(db)))
+                        (x, y) => new AccountsStorageProvider(Db)))
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .UseTransactions();
         }

@@ -28,12 +28,13 @@ namespace Bancor.Core.Tests
             var interest = dayByDayInterestCalculator.Calculate(transactions);
 
             // Assert
-            interest.Should().Be(200, "Interest should be calculated correctly");
+            var rounded = Math.Truncate(interest * 100) / 100;
+            rounded.Should().Be(49.86m, "Interest should be calculated correctly");
         }
 
 
         [Fact]
-        public void Should_Calculate_Interest_For_Two_Day()
+        public void Should_Calculate_Interest_For_Two_Days()
         {
             // Arrange
             var dayByDayInterestCalculator = new DayByDayInterestCalculator(10);
@@ -56,7 +57,8 @@ namespace Bancor.Core.Tests
             var interest = dayByDayInterestCalculator.Calculate(transactions);
 
             // Assert
-            interest.Should().Be(210, "Interest should calculated correctly");
+            var rounded = Math.Truncate(interest * 100) / 100;
+            rounded.Should().Be(49.86m, "Interest should calculated correctly");
         }
     }
 

@@ -9,101 +9,18 @@ using NPoco.FluentMappings;
 
 namespace Bancor.Infrastructure
 {
-    //public class InMemoryDatabase : Database
-    //{
-
-    //    public string ProviderName { get; set; }
-
-    //    public DatabaseType DbType { get; set; }
-
-    //    public void EnsureSharedConnectionConfigured()
-    //    {
-    //        Connection?.Open();
-    //    }
-
-    //    public void RecreateDataBase()
-    //    {
-    //        Console.WriteLine("----------------------------");
-    //        Console.WriteLine("Using SQLite In-Memory DB   ");
-    //        Console.WriteLine("----------------------------");
-
-    //        Connection.Open();
-
-    //        var cmd = Connection.CreateCommand();
-    //        cmd.CommandText = "CREATE TABLE Accounts(Id INTEGER, Name nvarchar(200), Balance REAL, Created INTEGER, PRIMARY KEY (Id));";
-    //        cmd.ExecuteNonQuery();
-    //        cmd.CommandText = "CREATE TABLE Customers(Id INTEGER , Name nvarchar(200), Created INTEGER, PRIMARY KEY (Id));";
-    //        cmd.ExecuteNonQuery();
-    //        cmd.CommandText = "CREATE TABLE Customers_Accounts(CustomerId INTEGER , AccountId INTEGER, PRIMARY KEY (CustomerId, AccountId));";
-    //        cmd.ExecuteNonQuery();
-    //        cmd.CommandText = "CREATE TABLE Transactions(Id STRING PRIMARY KEY, Amount REAL, BookingDate DATE, AccountId INT);";
-    //        cmd.ExecuteNonQuery();
-
-    //        //cmd.CommandText = "CREATE TABLE ExtraUserInfos(ExtraUserInfoId INTEGER PRIMARY KEY, UserId int, Email nvarchar(200), Children int);";
-    //        //cmd.ExecuteNonQuery();
-
-    //        cmd.Dispose();
-    //    }
-
-    //    public void CleanupDataBase()
-    //    {
-    //        if (Connection == null) return;
-
-    //        var cmd = Connection.CreateCommand();
-    //        cmd.CommandText = "DROP TABLE Customers;";
-    //        cmd.ExecuteNonQuery();
-
-    //        cmd.CommandText = "DROP TABLE Accounts;";
-    //        cmd.ExecuteNonQuery();
-
-    //        cmd.Dispose();
-    //    }
-
-    //    public InMemoryDatabase(DbConnection connection) : base(connection)
-    //    {
-    //        DbType = DatabaseType.SQLite;
-    //        ProviderName = DatabaseType.SQLite.GetProviderName();            
-    //    }
-
-    //    public InMemoryDatabase(DbConnection connection, DatabaseType dbType) : base(connection, dbType)
-    //    {
-    //    }
-
-    //    public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel) 
-    //        : base(connection, dbType, isolationLevel)
-    //    {
-    //    }
-
-    //    public InMemoryDatabase(DbConnection connection, DatabaseType dbType, IsolationLevel? isolationLevel, bool enableAutoSelect) 
-    //        : base(connection, dbType, isolationLevel, enableAutoSelect)
-    //    {
-    //    }
-
-    //    public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider) 
-    //        : base(connectionString, databaseType, provider)
-    //    {
-    //    }
-
-    //    public InMemoryDatabase(string connectionString, DatabaseType databaseType, DbProviderFactory provider, IsolationLevel? isolationLevel = null, bool enableAutoSelect = true) 
-    //        : base(connectionString, databaseType, provider, isolationLevel, enableAutoSelect)
-    //    {
-    //    }
-    //}
-
-
-
     public static class BankorDbFactory
     {
-        internal static string SqlLiteConnectionString = "Data Source=sharedmemdb;Mode=Memory;Cache=Shared";
+        internal static string SqlLiteConnectionString = "Data Source={0};Mode=Memory;Cache=Shared";
         public static DatabaseFactory DbFactory { get; private set; }
 
-        public static DatabaseFactory Setup()
+        public static DatabaseFactory Setup(string name)
         {
             var fluentConfig = FluentMappingConfiguration.Configure(new NPocoLabMappings());
 
             DbFactory = DatabaseFactory.Config(x =>
             {
-                var inMemoryDatabase = new Database(CreateConnection(), DatabaseType.SQLite);
+                var inMemoryDatabase = new Database(CreateConnection(name), DatabaseType.SQLite);
 
                 x.UsingDatabase(() => inMemoryDatabase);
                 x.WithFluentConfig(fluentConfig);
@@ -112,9 +29,9 @@ namespace Bancor.Infrastructure
             return DbFactory;
         }
 
-        public static IDatabase Create()
+        public static IDatabase Create(string name)
         {
-            var factory = Setup();
+            var factory = Setup(name);
 
             var db = factory.GetDatabase();
 
@@ -123,14 +40,20 @@ namespace Bancor.Infrastructure
             return db;
         }
 
-        public static DbConnection CreateConnection()
+        public static DbConnection CreateConnection(string name)
         {
-            return new SqliteConnection(SqlLiteConnectionString);
+            var connectionString = FormatConnectionString(name);
+            return new SqliteConnection(connectionString);
         }
 
-        public static void Upgrade()
+        public static string FormatConnectionString(string name)
         {
-            var serviceProvider = CreateServices();
+            return string.Format(SqlLiteConnectionString, name);
+        }
+
+        public static void Upgrade(string name)
+        {
+            var serviceProvider = CreateServices(name);
 
             using (var scope = serviceProvider.CreateScope())
             {
@@ -145,13 +68,13 @@ namespace Bancor.Infrastructure
             runner.MigrateUp();
         }
 
-        public static IServiceProvider CreateServices()
+        public static IServiceProvider CreateServices(string name)
         {
             return new ServiceCollection()
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb => rb
                     .AddSQLite()
-                    .WithGlobalConnectionString(SqlLiteConnectionString)
+                    .WithGlobalConnectionString(FormatConnectionString(name))
                     .ScanIn(typeof(SqlServerDatabaseFactory).Assembly)
                     .For.Migrations())
                 .BuildServiceProvider();
