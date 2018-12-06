@@ -58,6 +58,8 @@ namespace Bancor.Core.Grains
         }
         public async Task<decimal> GetBalance()
         {
+            await EnsureCreated();
+
             return await _transactionalState.PerformRead(r => r.Balance);
         }
 
