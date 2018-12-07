@@ -20,4 +20,9 @@
     <ProjectReference Include="..\Bancor.Infrastructure\Bancor.Infrastructure.csproj" />
     <ProjectReference Include="..\Bankor.Core.Grains\Bancor.Core.Grains.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update=".dockerignore">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>
