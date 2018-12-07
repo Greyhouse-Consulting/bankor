@@ -11,7 +11,7 @@ namespace Bancor.Infrastructure
     public class SqlServerDatabaseFactory
     {
         private static DatabaseFactory _factory = null;
-        protected internal static string ServerLocalhostDatabaseBancorTrustedConnectionTrue = "Server=localhost;Database=bancor;Trusted_Connection=True;";
+        protected internal static string ServerLocalhostDatabaseBancorTrustedConnectionTrue = "Server=db;Database=master;User=sa;Password=MyPassword001;";
 
         public static Database Create()
         {
