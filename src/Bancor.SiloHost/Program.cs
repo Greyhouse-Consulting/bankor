@@ -61,6 +61,11 @@ namespace Bancor.SiloHost
 
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = "dev";
+                    options.ServiceId = "bancor";
+                })
                 .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
                 .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
                 .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))

@@ -4,12 +4,10 @@ services:
       build:
         context: .
         dockerfile: src/Bancor.Api/Dockerfile
-      ports:
-        - "54600:54600"
       depends_on:
         - silo-host
       networks: 
-        - "bancor"
+        - "bancor-net"
     silo-host:
       build:
         context: .
@@ -17,7 +15,7 @@ services:
       depends_on:
         - db        
       networks: 
-        - "bancor"
+        - "bancor-net"
     db:
       image: "microsoft/mssql-server-linux:2017-latest"
       environment:
@@ -26,6 +24,6 @@ services:
       ports:
         - "1433:1433"
       networks: 
-        - "bancor"
+        - "bancor-net"
 networks:
-  bancor:
+  bancor-net:

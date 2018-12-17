@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Configuration;
 
 namespace Bancor.Api
 {
@@ -20,11 +23,28 @@ namespace Bancor.Api
         public IServiceProvider  ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            var clusterClient = ClientFactory.StartClientWithRetries().GetAwaiter().GetResult();
+               var client = new ClientBuilder()
+                .UseLocalhostClustering()
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = "dev";
+                    options.ServiceId = "bancor";
+                })
+                .ConfigureLogging(logging => logging.AddConsole())
+                .Build();
+            
+            client.Connect(RetryFilter).GetAwaiter().GetResult();
 
-            services.AddSingleton<IClusterClient>(clusterClient);
+            //var clusterClient = ClientFactory.StartClientWithRetries().GetAwaiter().GetResult();
+
+            services.AddSingleton<IClusterClient>(client);
 
             return services.BuildServiceProvider();
+        }
+
+        private Task<bool> RetryFilter(Exception arg)
+        {
+            return Task.FromResult(true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
