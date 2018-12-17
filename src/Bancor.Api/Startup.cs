@@ -20,9 +20,7 @@ namespace Bancor.Api
         public IServiceProvider  ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            var clusterClient = ClientFactory.StartClientWithRetries().Result;
-
-            clusterClient.Connect().Wait();
+            var clusterClient = ClientFactory.StartClientWithRetries().GetAwaiter().GetResult();
 
             services.AddSingleton<IClusterClient>(clusterClient);
 
