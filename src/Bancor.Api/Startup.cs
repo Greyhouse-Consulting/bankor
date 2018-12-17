@@ -21,6 +21,9 @@ namespace Bancor.Api
         {
             services.AddMvc();
             var clusterClient = ClientFactory.StartClientWithRetries().Result;
+
+            clusterClient.Connect().Wait();
+
             services.AddSingleton<IClusterClient>(clusterClient);
 
             return services.BuildServiceProvider();

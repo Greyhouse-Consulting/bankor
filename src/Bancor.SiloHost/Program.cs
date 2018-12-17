@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Infrastructure;
 using Bancor.Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using NPoco;
@@ -17,40 +19,48 @@ namespace Bancor.SiloHost
 {
     public class Program
     {
-        public static int Main(string[] args)
-        {
-            return RunMainAsync().Result;
-        }
 
-        private static async Task<int> RunMainAsync()
+        private static readonly AutoResetEvent closing = new AutoResetEvent(false);
+        private static ISiloHost silo;
+
+        public static void Main(string[] args)
         {
             try
             {
                 SqlServerDatabaseFactory.Upgrade();
 
-                var host = await StartSilo();
-                Console.WriteLine("Press Enter to terminate...");
-                Console.ReadLine();
+                silo = ConfigureSilo();
 
-                await host.StopAsync();
+                Task.Run(StartSilo);
 
-                return 0;
+                AppDomain.CurrentDomain.ProcessExit += (object sender, EventArgs e) =>
+                {
+                    Console.WriteLine("ProcessExit fired");
+                    Task.Run(StopSilo);
+                };
+
+                closing.WaitOne();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return 1;
             }
         }
 
-        private static async Task<ISiloHost> StartSilo()
+        private static async Task StopSilo()
+        {
+            await silo.StopAsync();
+            Console.WriteLine("Silo stopped");
+            closing.Set();
+        }
+
+        private static ISiloHost ConfigureSilo()
         {
 
             var db = SqlServerDatabaseFactory.Create();
 
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
-                .AddMemoryGrainStorage("DevStore")
                 .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
                 .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
                 .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
@@ -70,8 +80,14 @@ namespace Bancor.SiloHost
 
             var host = builder.Build();
 
-            await host.StartAsync();
             return host;
+        }
+
+
+        private static async Task StartSilo()
+        {
+            await silo.StartAsync();
+            Console.WriteLine("Silo started");
         }
     }
 
