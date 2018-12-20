@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Bancor.SiloHost": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

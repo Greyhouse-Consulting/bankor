@@ -11,15 +11,19 @@ services:
         - consul 
       networks: 
         - "bancor-net"
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Integration
     silo-host:
       build:
         context: .
         dockerfile: src/Bancor.SiloHost/Dockerfile
       depends_on:
         - db
-        - consul     
+        - consul
       networks: 
         - "bancor-net"
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Integration
     db:
       image: "microsoft/mssql-server-linux:2017-latest"
       environment:

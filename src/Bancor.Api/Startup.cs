@@ -16,32 +16,44 @@ namespace Bancor.Api
 {
     public class Startup
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
         private int _numRetries;
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
+            _hostingEnvironment = hostingEnvironment;
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider  ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-               var client = new ClientBuilder()
-                .UseConsulClustering(options =>
-                {
-                    options.Address = new Uri("http://consul:8500", UriKind.Absolute);
-                })
+            var builder = new ClientBuilder()
+                .UseConsulClustering(options => { options.Address = new Uri("http://consul:8500", UriKind.Absolute); })
                 .Configure<ClusterOptions>(options =>
                 {
                     options.ClusterId = "dev";
                     options.ServiceId = "bancor";
                 })
-                .ConfigureLogging(logging => logging.AddConsole())
-                .Build();
-            
-            client.Connect(RetryFilter).GetAwaiter().GetResult();
+                .ConfigureLogging(logging => logging.AddConsole());
+
+            if (_hostingEnvironment.IsEnvironment("Integration"))
+            {
+                builder.UseConsulClustering(options =>
+                {
+                    options.Address = new Uri("http://consul:8500", UriKind.Absolute);
+                });
+            }
+            else if(_hostingEnvironment.IsDevelopment())
+            {
+                builder.UseLocalhostClustering();
+            }
+
+             var client = builder.Build();
+
+             client.Connect(RetryFilter).GetAwaiter().GetResult();
 
             //var clusterClient = ClientFactory.StartClientWithRetries().GetAwaiter().GetResult();
 

@@ -11,6 +11,8 @@ namespace Bancor.Infrastructure
 {
     public static class BankorDbFactory
     {
+        public static string DatabaseName => "bancor";
+
         internal static string SqlLiteConnectionString = "Data Source={0};Mode=Memory;Cache=Shared";
         public static DatabaseFactory DbFactory { get; private set; }
 

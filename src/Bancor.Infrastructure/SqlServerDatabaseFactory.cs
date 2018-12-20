@@ -13,7 +13,7 @@ namespace Bancor.Infrastructure
         private static DatabaseFactory _factory = null;
         protected internal static string ServerLocalhostDatabaseBancorTrustedConnectionTrue = "Server=db;Database=master;User=sa;Password=MyPassword001;";
 
-        public static Database Create()
+        public static IDatabase Create()
         {
             EnsureDatabaseFactoryCreated();
 
