@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
+using Orleans.Hosting;
+using IHostingEnvironment = Microsoft.Extensions.Hosting.IHostingEnvironment;
 
 namespace Bancor.Api
 {
     public class Startup
     {
+        private int _numRetries;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,7 +29,10 @@ namespace Bancor.Api
         {
             services.AddMvc();
                var client = new ClientBuilder()
-                .UseLocalhostClustering()
+                .UseConsulClustering(options =>
+                {
+                    options.Address = new Uri("http://consul:8500", UriKind.Absolute);
+                })
                 .Configure<ClusterOptions>(options =>
                 {
                     options.ClusterId = "dev";
@@ -44,6 +52,11 @@ namespace Bancor.Api
 
         private Task<bool> RetryFilter(Exception arg)
         {
+            if (_numRetries > 10)
+                return Task.FromResult(false);
+
+            _numRetries += 1;
+            Thread.Sleep(5000);
             return Task.FromResult(true);
         }
 

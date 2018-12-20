@@ -4,8 +4,11 @@ services:
       build:
         context: .
         dockerfile: src/Bancor.Api/Dockerfile
+      ports:
+        - "5555:80"  
       depends_on:
         - silo-host
+        - consul 
       networks: 
         - "bancor-net"
     silo-host:
@@ -13,7 +16,8 @@ services:
         context: .
         dockerfile: src/Bancor.SiloHost/Dockerfile
       depends_on:
-        - db        
+        - db
+        - consul     
       networks: 
         - "bancor-net"
     db:
@@ -25,5 +29,11 @@ services:
         - "1433:1433"
       networks: 
         - "bancor-net"
+    consul:
+      image: consul:latest
+      networks:
+        - "bancor-net"
+      command: consul agent -dev -client 0.0.0.0
+
 networks:
   bancor-net:
