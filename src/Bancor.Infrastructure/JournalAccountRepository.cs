@@ -38,7 +38,6 @@ namespace Bancor.Infrastructure
 
             if (_eventLog.ContainsKey(accountId))
             {
-
                 var eventsToApply = _eventLog[accountId]
                     .Where(e => e.AccountVersion > version)
                     .OrderBy(e => e.AccountVersion);

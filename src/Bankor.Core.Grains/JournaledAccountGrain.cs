@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bancor.Core.Events.Account;
 using Bancor.Core.Grains.Interfaces;
