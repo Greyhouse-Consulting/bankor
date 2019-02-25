@@ -58,6 +58,9 @@ namespace Bancor.Infrastructure
             IReadOnlyList<AccountEvent> updates,
             int expectedversion)
         {
+            if(!_eventLog.ContainsKey(accountId))
+                _eventLog[accountId] = new List<AccountEventLog>();
+
             var latestVersion = _eventLog[accountId].Any() ? _eventLog[accountId].Max(e => e.AccountVersion) : 0;
 
             if (latestVersion + updates.Count - 1 != expectedversion)
