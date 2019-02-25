@@ -26,6 +26,7 @@ namespace Bancor.Integration.Tests
             (await grain.Balance()).ShouldBe(500);
         }
     }
+
     public class AccountGrainTests : GrainTest
     {
         [Fact]

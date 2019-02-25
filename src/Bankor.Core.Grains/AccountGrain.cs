@@ -18,7 +18,7 @@ namespace Bancor.Core.Grains
         {
             _transactionalState = transactionalState ?? throw new ArgumentNullException(nameof(transactionalState));
 
-            RegisterTimer(AddInterest, _transactionalState, TimeSpan.FromMinutes(5), TimeSpan.FromDays(1));
+   //         RegisterTimer(AddInterest, _transactionalState, TimeSpan.FromMinutes(5), TimeSpan.FromDays(1));
         }
 
         private async Task AddInterest(object o)
