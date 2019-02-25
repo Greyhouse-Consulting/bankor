@@ -13,10 +13,20 @@ namespace Bancor.Core.States.Account
             return this;
         }
 
+
+        public JournaledAccountGrainState Apply(WithdrawEvent @event)
+        {
+            Balance -= @event.Amount;
+            return this;
+        }
+
         public JournaledAccountGrainState Apply(AccountEvent @event)
         {
             if (@event is DepositEvent depositEvent)
                 return Apply(depositEvent);
+
+            if (@event is WithdrawEvent withdrawEvent)
+                return Apply(withdrawEvent);
 
             throw new Exception("Unhandled account event");
         }

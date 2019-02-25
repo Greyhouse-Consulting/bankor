@@ -23,7 +23,7 @@ namespace Bancor.Integration.Tests
             await grain.Deposit(200);
 
             // Assert
-            (await grain.Balance()).ShouldBe(400);
+            (await grain.Balance()).ShouldBe(500);
         }
     }
     public class AccountGrainTests : GrainTest

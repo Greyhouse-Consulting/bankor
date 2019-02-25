@@ -25,9 +25,25 @@ namespace Bancor.Infrastructure
 
     public class JournalAccountRepositoryInMemory : IJournaldAccountRepository
     {
-        private readonly IDictionary<long, JournaledAccountGrainStateSnapshot> _stateSnapshots = new Dictionary<long, JournaledAccountGrainStateSnapshot>();
-        private readonly IDictionary<long, IList<AccountEventLog>> _eventLog = new ConcurrentDictionary<long, IList<AccountEventLog>>();
-        private readonly IDictionary<long, int> _versions = new ConcurrentDictionary<long, int>();
+        private readonly IDictionary<long, JournaledAccountGrainStateSnapshot> _stateSnapshots;
+        private readonly IDictionary<long, IList<AccountEventLog>> _eventLog;
+        private readonly IDictionary<long, int> _versions;
+
+
+        public JournalAccountRepositoryInMemory()
+        {
+            _stateSnapshots = new Dictionary<long, JournaledAccountGrainStateSnapshot>();
+            _stateSnapshots.Add(2000, new JournaledAccountGrainStateSnapshot());
+
+
+            _versions = new ConcurrentDictionary<long, int>();
+            _versions.Add(2000, 0);
+
+            _eventLog = new ConcurrentDictionary<long, IList<AccountEventLog>>();
+            _eventLog.Add(2000, new List<AccountEventLog>());
+            _eventLog[2000].Add(new AccountEventLog(2000, new DepositEvent(200), 1 ));
+            _eventLog[2000].Add(new AccountEventLog(2000, new WithdrawEvent(100), 2 ));
+        }
 
         public Task<KeyValuePair<int, JournaledAccountGrainState>> GetState(long accountId)
         {
@@ -48,8 +64,10 @@ namespace Bancor.Infrastructure
                 }
             }
 
+            var latestVersion = _eventLog[accountId].Max(e => e.AccountVersion);
+
             return Task.FromResult(
-                new KeyValuePair<int, JournaledAccountGrainState>(version, _stateSnapshots[accountId]));
+                new KeyValuePair<int, JournaledAccountGrainState>(latestVersion, _stateSnapshots[accountId]));
         }
 
         public Task<bool> ApplyUpdatesToStorage(
@@ -68,6 +86,14 @@ namespace Bancor.Infrastructure
             foreach (var update in updates)
             {
                 _eventLog[accountId].Add(new AccountEventLog(accountId, update, ++latestVersion));
+            }
+
+            var oneYearBack = DateTime.Now.AddYears(-1);
+
+            var snapshot = _stateSnapshots[accountId];
+            foreach (var update in updates.Where(e => e.Created < oneYearBack))
+            {
+                snapshot.Apply(update);
             }
 
             return Task.FromResult(true);
