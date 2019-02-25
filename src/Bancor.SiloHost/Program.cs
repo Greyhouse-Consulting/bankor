@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Bancor.Core.Grains;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Infrastructure;
 using Bancor.Infrastructure.Repository;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using NPoco;
 using Orleans;
 using Orleans.Configuration;
+using Orleans.EventSourcing.CustomStorage;
 using Orleans.Hosting;
 using Orleans.Runtime;
 using Orleans.Storage;
@@ -114,11 +116,14 @@ namespace Bancor.SiloHost
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
                     (x, y) => new AccountsStorageProvider(db)))
-
+            //.ConfigureServices(s =>
+            //    s.AddSingletonNamedService<ICustomStorageInterface<JournaledAccountGrainState, AccountEvent>>("CustomStorage",
+            //        (x, y) => new JournaledAccountGrain()))
             .ConfigureLogging(logging => logging.AddConsole())
             .AddMemoryGrainStorageAsDefault()
             .AddSimpleMessageStreamProvider("SMSProvider")
             .AddMemoryGrainStorage("PubSubStore")
+            .AddCustomStorageBasedLogConsistencyProvider("CustomStorage")
             .UseTransactions();
 
             var host = siloHostBuilder.Build();

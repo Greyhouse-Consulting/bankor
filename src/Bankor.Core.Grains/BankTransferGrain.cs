@@ -11,8 +11,8 @@ namespace Bancor.Core.Grains
         Task IBankTransferGrain.Transfer(long fromAccount, long toAccount, decimal amountToTransfer)
         {
             return Task.WhenAll(
-                GrainFactory.GetGrain<IAccountGrain>(fromAccount).Withdraw(amountToTransfer),
-                GrainFactory.GetGrain<IAccountGrain>(toAccount).Deposit(amountToTransfer));
+                GrainFactory.GetGrain<IAccountGrain>(fromAccount).Withdraw(amountToTransfer, "The transfer"),
+                GrainFactory.GetGrain<IAccountGrain>(toAccount).Deposit(amountToTransfer,"The transfer"));
         }
     }
 }

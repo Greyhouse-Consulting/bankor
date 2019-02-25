@@ -3,6 +3,7 @@ using NPoco.FluentMappings;
 
 namespace Bancor.Infrastructure
 {
+
     public class NPocoLabMappings : Mappings
     {
         public NPocoLabMappings()

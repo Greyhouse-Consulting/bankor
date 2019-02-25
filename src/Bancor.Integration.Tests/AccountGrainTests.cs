@@ -1,15 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Bancor.Core.Grains;
+﻿using Bancor.Core;
+using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
-using Microsoft.Extensions.Configuration;
 using Orleans.Transactions;
 using Shouldly;
 using Xunit;
 
 namespace Bancor.Integration.Tests
 {
+
+    public class JournaledGrainTest : GrainTest
+    {
+        [Fact]
+        public async void Should_Store_One_Event()
+        {
+            // Arrange
+            await DeployClusterAsync();
+
+            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(2000);
+                
+            // Act
+            await grain.Deposit(200);
+            await grain.Deposit(200);
+
+            // Assert
+            (await grain.Balance()).ShouldBe(400);
+        }
+    }
     public class AccountGrainTests : GrainTest
     {
         [Fact]
@@ -51,7 +67,7 @@ namespace Bancor.Integration.Tests
 
             // Act
             await grain.HasNewName("Savings account");
-            await grain.Deposit(200);
+            await grain.Deposit(200, "The transfer", TransactionType.Default);
 
             var balance = await grain.GetBalance();
             // Assert
@@ -59,3 +75,4 @@ namespace Bancor.Integration.Tests
         }
     }
 }
+  

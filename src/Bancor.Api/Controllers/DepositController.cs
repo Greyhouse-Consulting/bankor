@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Bancor.Core;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
@@ -22,7 +23,7 @@ namespace Bancor.Api.Controllers
         {
             var account = _clusterClient.GetGrain<IAccountGrain>(accountId);
 
-            await account.Deposit(request.Amount);
+            await account.Deposit(request.Amount,"The transfer", TransactionType.Default);
 
             return Created("/transactions/", "2020202");
         }
