@@ -27,7 +27,15 @@ namespace Bancor.Core.Grains
 
         public Task Deposit(decimal amount)
         {
+            EnsureCreated();
+
             RaiseEvent(new DepositEvent(amount));
+
+            return ConfirmEvents();
+        }
+        public Task HasNewName(string name)
+        {
+            RaiseEvent(new AccountNameEvent(name));
 
             return ConfirmEvents();
         }
