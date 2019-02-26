@@ -33,7 +33,7 @@ namespace Bancor.Infrastructure
         public JournalAccountRepositoryInMemory()
         {
             _stateSnapshots = new Dictionary<long, JournaledAccountGrainStateSnapshot>();
-            _stateSnapshots.Add(2000, new JournaledAccountGrainStateSnapshot());
+            _stateSnapshots.Add(2000, new JournaledAccountGrainStateSnapshotTest());
 
 
             _versions = new ConcurrentDictionary<long, int>();
@@ -64,7 +64,7 @@ namespace Bancor.Infrastructure
                 }
             }
 
-            var latestVersion = _eventLog[accountId].Max(e => e.AccountVersion);
+            var latestVersion = _eventLog.ContainsKey(accountId) ? _eventLog[accountId].Max(e => e.AccountVersion) : 0;
 
             return Task.FromResult(
                 new KeyValuePair<int, JournaledAccountGrainState>(latestVersion, _stateSnapshots[accountId]));
@@ -97,6 +97,14 @@ namespace Bancor.Infrastructure
             }
 
             return Task.FromResult(true);
+        }
+    }
+
+    public class JournaledAccountGrainStateSnapshotTest  : JournaledAccountGrainStateSnapshot
+    {
+        public JournaledAccountGrainStateSnapshotTest()
+        {
+            Apply(new AccountNameEvent("Savings account"));
         }
     }
 }

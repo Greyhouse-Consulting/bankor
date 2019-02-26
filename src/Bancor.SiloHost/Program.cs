@@ -109,6 +109,7 @@ namespace Bancor.SiloHost
             .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
             .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
             .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
+            .ConfigureServices(s => s.TryAddSingleton<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
                     (x, y) => new CustomerStorageProvider(db,
