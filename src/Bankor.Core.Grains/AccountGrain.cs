@@ -5,12 +5,13 @@ using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Orleans;
 using Orleans.Providers;
+using Orleans.Runtime;
 using Orleans.Transactions.Abstractions;
 
 namespace Bancor.Core.Grains
 {
     [StorageProvider(ProviderName = "AccountsStorageProvider")]
-    public class AccountGrain : Grain<AccountGrainState>, IAccountGrain
+    public class AccountGrain : Grain<AccountGrainState>, IAccountGrain, IRemindable
     {
         private readonly ITransactionalState<AccountGrainStateTransactional> _transactionalState;
 
@@ -18,8 +19,10 @@ namespace Bancor.Core.Grains
         {
             _transactionalState = transactionalState ?? throw new ArgumentNullException(nameof(transactionalState));
 
-   //         RegisterTimer(AddInterest, _transactionalState, TimeSpan.FromMinutes(5), TimeSpan.FromDays(1));
+
+            //RegisterOrUpdateReminder("DailyInterest", TimeSpan.FromHours(1), TimeSpan.FromDays(1) );
         }
+
 
         private async Task AddInterest(object o)
         {
@@ -98,6 +101,11 @@ namespace Bancor.Core.Grains
             if (!State.Created)
                 throw new GrainDoesNotExistException($"Customer with id '{this.GetPrimaryKeyLong()}' does not exist");
 
+            return Task.CompletedTask;
+        }
+
+        public Task ReceiveReminder(string reminderName, TickStatus status)
+        {
             return Task.CompletedTask;
         }
     }
