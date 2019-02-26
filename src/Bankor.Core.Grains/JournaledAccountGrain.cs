@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bancor.Core.Events.Account;
+using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Core.States.Account;
@@ -33,7 +34,15 @@ namespace Bancor.Core.Grains
 
         public Task<decimal> Balance()
         {
+            EnsureCreated();
+
             return Task.FromResult(State.Balance);
+        }
+
+        private void EnsureCreated()
+        {
+            if (!State.Created)
+                throw new GrainDoesNotExistException($"Customer with id '{this.GetPrimaryKeyLong()}' does not exist");
         }
 
         public async Task<KeyValuePair<int, JournaledAccountGrainState>> ReadStateFromStorage()

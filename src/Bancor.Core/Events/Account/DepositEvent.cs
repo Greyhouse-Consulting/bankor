@@ -9,4 +9,14 @@
             Amount = amount;
         }
     }
+
+    public class AccountNameEvent : AccountEvent
+    {
+        public string Name { get; }
+
+        public AccountNameEvent(string name)
+        {
+            Name = name;
+        }
+    }
 }

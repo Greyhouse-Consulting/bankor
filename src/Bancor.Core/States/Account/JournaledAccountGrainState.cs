@@ -6,8 +6,12 @@ namespace Bancor.Core.States.Account
 {
     public class JournaledAccountGrainState
     {
-        private IList<Transaction> _transactions;
+        private readonly IList<Transaction> _transactions;
         public decimal Balance { get; private set; }
+
+        public string Name { get; private set; }
+
+        public bool Created { get; private set; }
 
         public  IReadOnlyList<Transaction> Transactions => (IReadOnlyList<Transaction>) _transactions;
 
@@ -26,6 +30,14 @@ namespace Bancor.Core.States.Account
                 BookingDate = DateTime.Now
             });
             
+            return this;
+        }
+
+        public JournaledAccountGrainState Apply(AccountNameEvent @event)
+        {
+            Name += @event.Name;
+
+            Created = true;
             return this;
         }
 
@@ -50,6 +62,9 @@ namespace Bancor.Core.States.Account
 
             if (@event is WithdrawEvent withdrawEvent)
                 return Apply(withdrawEvent);
+
+            if (@event is AccountNameEvent accountNameEvent)
+                return Apply(accountNameEvent);
 
             throw new Exception("Unhandled account event");
         }
