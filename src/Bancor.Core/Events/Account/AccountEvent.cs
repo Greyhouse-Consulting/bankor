@@ -8,32 +8,17 @@ namespace Bancor.Core.Events.Account
         {
             Created = DateTime.Now;
         }
-        public DateTime Created { get; }
+        public DateTime Created { get; set;}
 
     }
 
     public class WithdrawEvent : AccountEvent
     {
-        public decimal Amount { get; }
+        public decimal Amount { get; set; }
 
         public WithdrawEvent(decimal amount)
         {
             Amount = amount;
-        }
-    }
-
-    public class AccountEventLog
-    {
-        public long AccountId { get; }
-        public AccountEvent AccountEvent { get; }
-        public int AccountVersion { get; set; }
-
-
-        public AccountEventLog(long accountId, AccountEvent accountEvent, int version)
-        {
-            AccountId = accountId;
-            AccountEvent = accountEvent;
-            AccountVersion = version;
         }
     }
 }

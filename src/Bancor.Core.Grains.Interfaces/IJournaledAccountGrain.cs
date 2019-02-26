@@ -3,7 +3,7 @@ using Orleans;
 
 namespace Bancor.Core.Grains.Interfaces
 {
-    public interface IJournaledAccountGrain : IGrainWithIntegerKey
+    public interface IJournaledAccountGrain : IGrainWithGuidKey
     {
         Task Deposit(decimal amount);
         Task<decimal> Balance();

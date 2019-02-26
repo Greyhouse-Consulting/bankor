@@ -72,7 +72,8 @@ namespace Bancor.Core.States.Account
 
     public class JournaledAccountGrainStateSnapshot : JournaledAccountGrainState
     {
-        public int AccountId { get; set; }
+        public Guid Id { get; set; }
+        public Guid AccountId { get; set; }
         public int LatestVersion { get; set; }
 
     }

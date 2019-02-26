@@ -23,10 +23,4 @@
     <ProjectReference Include="..\Bankor.Core.Grains\Bancor.Core.Grains.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.EntityFrameworkCore.Design">
-      <HintPath>C:\Users\k403129\.nuget\packages\microsoft.entityframeworkcore.design\2.1.4\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Design.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

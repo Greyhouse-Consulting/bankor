@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Bancor.Core.Grains;
 using Bancor.Core.Grains.EventStores;
 using Bancor.Core.States.Account;
@@ -20,7 +21,7 @@ namespace Bancor.Infrastructure
 
         }
 
-        public async Task<JournaledAccountGrainState> GetAccountState(int id)
+        public async Task<JournaledAccountGrainState> GetAccountState(Guid id)
         {
             var state = await _accountCollection.FindAsync(s => s.AccountId == id);
 

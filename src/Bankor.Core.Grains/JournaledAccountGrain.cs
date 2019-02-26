@@ -55,12 +55,12 @@ namespace Bancor.Core.Grains
 
         public async Task<KeyValuePair<int, JournaledAccountGrainState>> ReadStateFromStorage()
         {
-            return await _journaldAccountRepository.GetState(this.GetPrimaryKeyLong());
+            return await _journaldAccountRepository.GetState(this.GetPrimaryKey());
         }
 
         public async  Task<bool> ApplyUpdatesToStorage(IReadOnlyList<AccountEvent> updates, int expectedversion)
         {
-            return await _journaldAccountRepository.ApplyUpdatesToStorage(this.GetPrimaryKeyLong(), updates, expectedversion);
+            return await _journaldAccountRepository.ApplyUpdatesToStorage(this.GetPrimaryKey(), updates, expectedversion);
         }
     }
 }

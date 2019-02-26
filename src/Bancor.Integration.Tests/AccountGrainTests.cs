@@ -1,4 +1,5 @@
-﻿using Bancor.Core;
+﻿using System;
+using Bancor.Core;
 using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Orleans.Transactions;
@@ -15,8 +16,8 @@ namespace Bancor.Integration.Tests
         {
             // Arrange
             await DeployClusterAsync();
-
-            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(2000);
+            var accountId = Guid.Parse("EBD09F9C-4A99-4B8D-A581-3C93764D24B1");
+            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(accountId);
                 
             // Act
             await grain.Deposit(200);

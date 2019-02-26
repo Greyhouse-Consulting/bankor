@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
@@ -20,7 +21,8 @@ namespace Bancor.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(int customerId)
         {
-            var customers = _clusterClient.GetGrain<IJournaledAccountGrain>(customerId);
+
+            var customers = _clusterClient.GetGrain<IJournaledAccountGrain>(Guid.Parse("EBD09F9C-4A99-4B8D-A581-3C93764D24B1"));
            // var customers = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
             await customers.Deposit(2000);

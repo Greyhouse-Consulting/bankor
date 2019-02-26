@@ -2,7 +2,7 @@
 {
     public class DepositEvent : AccountEvent
     {
-        public decimal Amount { get; }
+        public decimal Amount { get; set; }
 
         public DepositEvent(decimal amount)
         {
@@ -12,7 +12,7 @@
 
     public class AccountNameEvent : AccountEvent
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
         public AccountNameEvent(string name)
         {
