@@ -18,17 +18,6 @@ namespace Bancor.Infrastructure
         public JournalAccountRepositoryInMemory(IMongoDatabase mongoDatabase)
         {
             _mongoDatabase = mongoDatabase;
-            //_stateSnapshots = new Dictionary<long, JournaledAccountGrainStateSnapshot>();
-            //_stateSnapshots.Add(2000, new JournaledAccountGrainStateSnapshotTest());
-
-
-            //_versions = new ConcurrentDictionary<long, int>();
-            //_versions.Add(2000, 0);
-
-            //_eventLog = new ConcurrentDictionary<long, IList<AccountEventLog>>();
-            //_eventLog.Add(2000, new List<AccountEventLog>());
-            //_eventLog[2000].Add(new AccountEventLog(2000, new DepositEvent(200), 1 ));
-            //_eventLog[2000].Add(new AccountEventLog(2000, new WithdrawEvent(100), 2 ));
         }
 
         public async Task<KeyValuePair<int, JournaledAccountGrainState>> GetState(Guid accountId)
@@ -79,7 +68,8 @@ namespace Bancor.Infrastructure
             
             var ec = _mongoDatabase.GetCollection<AccountEventLog>(nameof(AccountEventLog));
             var events = (await ec.Find(e => e.AccountId == accountId && e.AccountVersion > snapshot.LatestVersion).ToListAsync())
-                .OrderByDescending(e => e.AccountVersion);
+                .OrderByDescending(e => e.AccountVersion)
+                .Where(e => updates.All(u => u.Id != e.Id));
 
             var latestVersion = events.Any() ? events.Max(e => e.AccountVersion) : snapshot.LatestVersion;
 
