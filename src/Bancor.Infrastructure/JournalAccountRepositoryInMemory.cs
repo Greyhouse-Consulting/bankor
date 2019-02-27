@@ -63,34 +63,49 @@ namespace Bancor.Infrastructure
             int expectedversion)
         {
 
-            var sc = _mongoDatabase.GetCollection<JournaledAccountGrainStateSnapshot>(nameof(JournaledAccountGrainStateSnapshot));
-            var snapshot = await sc.Find(a => a.AccountId == accountId).FirstOrDefaultAsync();
+            try
+            {
+                var sc = _mongoDatabase.GetCollection<JournaledAccountGrainStateSnapshot>(nameof(JournaledAccountGrainStateSnapshot));
+                var snapshot = await sc.Find(a => a.AccountId == accountId).FirstOrDefaultAsync();
+
+                if (snapshot == null)
+                {
+                    snapshot = new JournaledAccountGrainStateSnapshot{ AccountId = accountId, Id = Guid.NewGuid()};
+                    sc.InsertOne(snapshot);
+                }
+
+                var ec = _mongoDatabase.GetCollection<AccountEventLog>(nameof(AccountEventLog));
             
-            var ec = _mongoDatabase.GetCollection<AccountEventLog>(nameof(AccountEventLog));
-            var events = (await ec.Find(e => e.AccountId == accountId && e.AccountVersion > snapshot.LatestVersion).ToListAsync())
-                .OrderByDescending(e => e.AccountVersion)
-                .Where(e => updates.All(u => u.Id != e.Id));
+                var events = (await ec.Find(e => e.AccountId == accountId && e.AccountVersion > snapshot.LatestVersion).ToListAsync())
+                    .OrderByDescending(e => e.AccountVersion)
+                    .Where(e => updates.All(u => u.Id != e.Id));
 
-            var latestVersion = events.Any() ? events.Max(e => e.AccountVersion) : snapshot.LatestVersion;
+                var latestVersion = events.Any() ? events.Max(e => e.AccountVersion) : snapshot.LatestVersion;
 
-            if (latestVersion + updates.Count - 1 != expectedversion)
-                throw new Exception();
+                if (latestVersion + updates.Count - 1 != expectedversion)
+                    throw new Exception();
 
-            foreach (var update in updates)
-            {
-                ec.InsertOne(new AccountEventLog(accountId, update, ++latestVersion));
+                foreach (var update in updates)
+                {
+                    ec.InsertOne(new AccountEventLog(accountId, update, ++latestVersion));
+                }
+
+                var oneYearBack = DateTime.Now.AddYears(-1);
+
+                foreach (var update in updates.Where(e => e.Created < oneYearBack))
+                {
+                    snapshot.Apply(update);
+                }
+
+                sc.ReplaceOne(f => f.AccountId == accountId, snapshot);
+
+                return true;
             }
-
-            var oneYearBack = DateTime.Now.AddYears(-1);
-
-            foreach (var update in updates.Where(e => e.Created < oneYearBack))
+            catch (Exception e)
             {
-                snapshot.Apply(update);
+                Console.WriteLine(e);
+                return false;
             }
-
-            sc.ReplaceOne(f => f.AccountId == accountId, snapshot);
-
-            return true;
         }
     }
 }
