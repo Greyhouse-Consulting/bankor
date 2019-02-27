@@ -33,6 +33,16 @@ namespace Bancor.Core.Grains
 
             return ConfirmEvents();
         }
+
+        public Task Withdraw(decimal amount)
+        {
+            EnsureCreated();
+
+            RaiseEvent(new WithdrawEvent(amount));
+
+            return ConfirmEvents();
+        }
+
         public Task HasNewName(string name)
         {
             RaiseEvent(new AccountNameEvent(name));
@@ -45,6 +55,13 @@ namespace Bancor.Core.Grains
             EnsureCreated();
 
             return Task.FromResult(State.Balance);
+        }
+
+        public Task HasName(string name)
+        {
+            RaiseEvent(new AccountNameEvent(name));
+
+            return ConfirmEvents();
         }
 
         private void EnsureCreated()
