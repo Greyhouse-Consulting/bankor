@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Bancor.Core.Grains;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Infrastructure;
+using Bancor.Infrastructure.Abstractions;
 using Bancor.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using NPoco;
 using Orleans;
 using Orleans.Configuration;
@@ -101,6 +103,9 @@ namespace Bancor.SiloHost
                     throw new Exception($"Unknown environment '{EnvironmentName}'");
             }
 
+
+            var mongoDb = new MongoDbInmemoryFactory().Create();
+
             siloHostBuilder.Configure<ClusterOptions>(options =>
             {
                 options.ClusterId = "dev";
@@ -109,7 +114,8 @@ namespace Bancor.SiloHost
             .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
             .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
             .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
-            .ConfigureServices(s => s.TryAddSingleton<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
+            .ConfigureServices(s => s.TryAddSingleton<IMongoDatabase>(mongoDb))
+            .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
                     (x, y) => new CustomerStorageProvider(db,
