@@ -104,7 +104,7 @@ namespace Bancor.SiloHost
             }
 
 
-            var mongoDb = new MongoDbInmemoryFactory().Create();
+            var inmemoryMongoDatabase = new MongoDbInmemoryFactory().Create();
 
             siloHostBuilder.Configure<ClusterOptions>(options =>
             {
@@ -114,7 +114,7 @@ namespace Bancor.SiloHost
             .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
             .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
             .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
-            .ConfigureServices(s => s.TryAddSingleton<IMongoDatabase>(mongoDb))
+            .ConfigureServices(s => s.TryAddSingleton<IMongoDatabase>(inmemoryMongoDatabase))
             .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
@@ -123,9 +123,6 @@ namespace Bancor.SiloHost
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
                     (x, y) => new AccountsStorageProvider(db)))
-            //.ConfigureServices(s =>
-            //    s.AddSingletonNamedService<ICustomStorageInterface<JournaledAccountGrainState, AccountEvent>>("CustomStorage",
-            //        (x, y) => new JournaledAccountGrain()))
             .ConfigureLogging(logging => logging.AddConsole())
             .AddMemoryGrainStorageAsDefault()
             .AddSimpleMessageStreamProvider("SMSProvider")
