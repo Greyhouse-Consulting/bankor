@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -51,13 +52,19 @@ namespace Bancor.Api
                 builder.UseLocalhostClustering();
             }
 
-             var client = builder.Build();
+            var client = builder.Build();
 
-             client.Connect(RetryFilter).GetAwaiter().GetResult();
+            client.Connect(RetryFilter).GetAwaiter().GetResult();
 
             //var clusterClient = ClientFactory.StartClientWithRetries().GetAwaiter().GetResult();
 
             services.AddSingleton<IClusterClient>(client);
+
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bancor API", Version = "v1" });
+            });
 
             return services.BuildServiceProvider();
         }
@@ -79,6 +86,16 @@ namespace Bancor.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             app.UseMvc();
         }
