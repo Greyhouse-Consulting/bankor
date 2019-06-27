@@ -9,12 +9,12 @@ using Orleans;
 
 namespace Bancor.Api.Controllers
 {
-    [Route("api/customers/{customerId}/accounts")]
-    public class AccountsController : Controller
+    [Route("customers/{customerId}/accounts")]
+    public class CustomerAccountsController : Controller
     {
         private readonly IClusterClient _clusterClient;
 
-        public AccountsController(IClusterClient clusterClient)
+        public CustomerAccountsController(IClusterClient clusterClient)
         {
             _clusterClient = clusterClient;
         }
@@ -22,9 +22,10 @@ namespace Bancor.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(Guid customerId)
         {
-            var customers = _clusterClient.GetGrain<ICustomerGrain>(customerId);
+            //var customers = _clusterClient.GetGrain<IJournaledAccountGrain>(Guid.Parse("EBD09F9C-4A99-4B8D-A581-3C93764D24B1"));
+            var customer = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
-            return Ok((await customers.GetAccounts()).Select(a => new { a.Id, a.Name}));
+            return Ok((await customer.GetAccounts()).Select(a => a.Id));
         }
 
         [HttpPost]
@@ -34,7 +35,7 @@ namespace Bancor.Api.Controllers
 
             try
             {
-                await customer.CreateAccount(request.Name);
+                return Ok(await customer.CreateAccount(request.Name));
             }
             catch (GrainDoesNotExistException e)
             {

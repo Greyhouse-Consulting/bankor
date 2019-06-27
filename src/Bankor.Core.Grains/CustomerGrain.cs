@@ -31,7 +31,7 @@ namespace Bancor.Core.Grains
                 accountNames.Add(new AccountModel
                 {
                     Name = await account.Name(),
-                    Id = account.GetPrimaryKeyLong(),
+                    Id = account.GetPrimaryKey(),
                     Balance = await account.Balance()
                 });
             }
@@ -40,7 +40,7 @@ namespace Bancor.Core.Grains
         }
 
 
-        public async Task CreateAccount(string name)
+        public async Task<Guid> CreateAccount(string name)
         {
             EnsureCreated();
 
@@ -55,6 +55,7 @@ namespace Bancor.Core.Grains
 
             await WriteStateAsync();
 
+            return accountId;
         }
 
         private async Task NotifyNewAccount(string accountId)

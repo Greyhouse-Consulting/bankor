@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
@@ -31,7 +32,7 @@ namespace Bancor.Api.Controllers
 
         // GET
         [HttpGet("{id}")]
-        public IActionResult Get(long id)
+        public IActionResult Get(Guid id)
         {
             var customer = _clusterClient.GetGrain<ICustomerGrain>(id);
 

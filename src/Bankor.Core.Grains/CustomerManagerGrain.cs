@@ -21,9 +21,7 @@ namespace Bancor.Core.Grains
                 Name = name
             };
 
-            var customerId = Math.Abs(Guid.NewGuid().GetHashCode());
-
-            //var customerId = await _customerRepository.Insert(customer);
+            var customerId = Guid.NewGuid();
 
             var customerGrain = GrainFactory.GetGrain<ICustomerGrain>(customerId);
 

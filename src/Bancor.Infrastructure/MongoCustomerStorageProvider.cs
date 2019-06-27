@@ -66,15 +66,6 @@ namespace Bancor.Infrastructure
                 var newAccounts = state.AccountGrains.Select(a => a.GetPrimaryKey()).Except(customerAccounts);
                 var removedAccounts = customerAccounts.Except(state.AccountGrains.Select(a => a.GetPrimaryKey()));
 
-                foreach (var removedAccount in removedAccounts)
-                {
-                    customer.AccountsIds.RemoveAt(customer.AccountsIds.IndexOf(removedAccount));
-                }
-
-                foreach (var newAccount in newAccounts)
-                {
-                    customer.AccountsIds.Add(newAccount);
-                }
 
                 if (customer == null)
                 {
@@ -89,6 +80,17 @@ namespace Bancor.Infrastructure
                 }
                 else
                 {
+
+                    foreach (var removedAccount in removedAccounts)
+                    {
+                        customer.AccountsIds.RemoveAt(customer.AccountsIds.IndexOf(removedAccount));
+                    }
+
+                    foreach (var newAccount in newAccounts)
+                    {
+                        customer.AccountsIds.Add(newAccount);
+                    }
+
                     await customerCollection.FindOneAndReplaceAsync(c => c.Id == customer.Id, customer);
                 }
             }

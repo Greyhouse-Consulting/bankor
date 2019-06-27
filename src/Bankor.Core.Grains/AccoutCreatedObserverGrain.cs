@@ -9,16 +9,16 @@ namespace Bancor.Core.Grains
 
     public interface INewAccountReceiver 
     {
-        Task NewAccount(int id);
+        Task NewAccount(string id);
     }
 
     [StatelessWorker]
     [ImplicitStreamSubscription("RANDOMDATA")]
     public class AccoutCreatedObserverGrain : Grain, IAccoutCreatedObserverGrain, INewAccountReceiver
     {
-        protected internal IAsyncStream<int> Stream;
+        protected internal IAsyncStream<string> Stream;
 
-        public Task NewAccount(int id)
+        public Task NewAccount(string id)
         {
             return Task.CompletedTask;
         }
@@ -26,7 +26,7 @@ namespace Bancor.Core.Grains
         public async Task StartSubscribe()
         {
             var streamProvider = GetStreamProvider("SMSProvider");
-            Stream = streamProvider.GetStream<int>(StreamIdGenerator.StreamId, "ACCOUNTID");
+            Stream = streamProvider.GetStream<string>(StreamIdGenerator.StreamId, "ACCOUNTID");
             await Stream.SubscribeAsync(async (a, token) => await NewAccount(a));
         }
     }
