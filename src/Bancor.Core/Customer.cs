@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Bancor.Core
 {
     public class Customer
     {
+        public Customer()
+        {
+            AccountsIds = new List<Guid>();
+        }
 
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public IList<Account> Accounts { get; set; }
+        
+        public IList<Guid> AccountsIds { get; set; }
     }
 }

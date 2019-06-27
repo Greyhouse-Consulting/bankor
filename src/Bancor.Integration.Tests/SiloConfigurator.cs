@@ -21,23 +21,23 @@ namespace Bancor.Integration.Tests
         public void Configure(ISiloHostBuilder hostBuilder)
         {
 
-            hostBuilder
-                .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
-                .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
-                .ConfigureServices(s => s.TryAddSingleton<IDatabase>(Db))
-                .ConfigureServices(s => s.TryAddSingleton<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
-                .ConfigureServices(s => s.TryAddSingleton<IMongoDbFactory, MongoDbInmemoryFactory>())
-                .ConfigureServices(s => s.AddSingleton(x => x.GetService<IMongoDbFactory>().Create()))
-                .ConfigureServices(s =>
-                    s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                        (x, y) => new CustomerStorageProvider(Db,
-                            (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
-                .ConfigureServices(s =>
-                    s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
-                        (x, y) => new AccountsStorageProvider(Db)))
-                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
-                .AddCustomStorageBasedLogConsistencyProvider("CustomStorage")
-                .UseTransactions();
+            //hostBuilder
+            //    .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, MongoCustomerStorageProvider>())
+            //    .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
+            //    .ConfigureServices(s => s.TryAddSingleton<IDatabase>(Db))
+            //    .ConfigureServices(s => s.TryAddSingleton<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
+            //    .ConfigureServices(s => s.TryAddSingleton<IMongoDbFactory, MongoDbInmemoryFactory>())
+            //    .ConfigureServices(s => s.AddSingleton(x => x.GetService<IMongoDbFactory>().Create()))
+            //    .ConfigureServices(s =>
+            //        s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
+            //            (x, y) => new MongoCustomerStorageProvider(Db,
+            //                (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
+            //    .ConfigureServices(s =>
+            //        s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
+            //            (x, y) => new AccountsStorageProvider(Db)))
+            //    .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
+            //    .AddCustomStorageBasedLogConsistencyProvider("CustomStorage")
+            //    .UseTransactions();
         }
     }
 }

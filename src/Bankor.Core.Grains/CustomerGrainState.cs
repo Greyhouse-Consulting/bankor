@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
 
 namespace Bancor.Core.Grains
@@ -7,12 +8,12 @@ namespace Bancor.Core.Grains
     {
         public CustomerGrainState()
         {
-            AccountGrains = new List<IAccountGrain>();
+            AccountGrains = new List<IJournaledAccountGrain>();
         }
 
         public string Name { get; set; }
         public bool Created { get; set; }
 
-        public IList<IAccountGrain> AccountGrains { get; set; }
+        public IList<IJournaledAccountGrain> AccountGrains { get; set; }
     }
 }

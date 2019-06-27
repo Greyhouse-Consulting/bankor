@@ -11,7 +11,7 @@ namespace Bancor.Infrastructure.Migrations
                 .WithColumn("Id").AsInt64().PrimaryKey()
                 .WithColumn("Name").AsString();
 
-            Create.Table("Accounts")
+            Create.Table("AccountsIds")
                 .WithColumn("Id").AsInt64().PrimaryKey()
                 .WithColumn("Name").AsString()
                 .WithColumn("Balance").AsDecimal();
@@ -31,7 +31,7 @@ namespace Bancor.Infrastructure.Migrations
         {
             Delete.Table("CustomerAccounts");
             Delete.Table("Customers");
-            Delete.Table("Accounts");
+            Delete.Table("AccountsIds");
             Delete.Table("Transactions");
         }
     }

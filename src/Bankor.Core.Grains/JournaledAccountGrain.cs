@@ -64,6 +64,11 @@ namespace Bancor.Core.Grains
             return ConfirmEvents();
         }
 
+        public Task<string> Name()
+        {
+            return Task.FromResult(State.Name);
+        }
+
         private void EnsureCreated()
         {
             if (!State.Created)
@@ -75,7 +80,7 @@ namespace Bancor.Core.Grains
             return await _journaldAccountRepository.GetState(this.GetPrimaryKey());
         }
 
-        public async  Task<bool> ApplyUpdatesToStorage(IReadOnlyList<AccountEvent> updates, int expectedversion)
+        public async Task<bool> ApplyUpdatesToStorage(IReadOnlyList<AccountEvent> updates, int expectedversion)
         {
             return await _journaldAccountRepository.ApplyUpdatesToStorage(this.GetPrimaryKey(), updates, expectedversion);
         }

@@ -26,7 +26,7 @@ namespace Bancor.Api.Controllers
 
             var x = _clusterClient.GetGrain<IAccoutCreatedObserverGrain>(0);
             await x.StartSubscribe();
-            return Ok(customer.GetPrimaryKeyLong());
+            return Ok(customer.GetPrimaryKey());
         }
 
         // GET

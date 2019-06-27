@@ -10,5 +10,6 @@ namespace Bancor.Core.Grains.Interfaces
         Task<decimal> Balance();
 
         Task HasName(string name);
+        Task<string> Name();
     }
 }

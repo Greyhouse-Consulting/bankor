@@ -17,7 +17,7 @@ namespace Bancor.Infrastructure
         private void MapAccounts()
         {
             For<Account>().PrimaryKey(k => k.Id, false);
-            For<Account>().TableName("Accounts");
+            For<Account>().TableName("AccountsIds");
 
             For<Account>().Columns(x =>
             {
@@ -38,7 +38,7 @@ namespace Bancor.Infrastructure
             {
                 x.Column(y => y.Id);
                 x.Column(y => y.Name);
-                x.Column(y => y.Accounts).Ignore();
+                x.Column(y => y.AccountsIds).Ignore();
             });
         }
 

@@ -111,14 +111,14 @@ namespace Bancor.SiloHost
                 options.ClusterId = "dev";
                 options.ServiceId = "bancor";
             })
-            .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, CustomerStorageProvider>())
+            .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, MongoCustomerStorageProvider>())
             .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
-            .ConfigureServices(s => s.TryAddSingleton<IDatabase>(db))
-            .ConfigureServices(s => s.TryAddSingleton<IMongoDatabase>(inmemoryMongoDatabase))
+            .ConfigureServices(s => s.TryAddSingleton(db))
+            .ConfigureServices(s => s.TryAddSingleton(inmemoryMongoDatabase))
             .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                    (x, y) => new CustomerStorageProvider(db,
+                    (x, y) => new MongoCustomerStorageProvider(inmemoryMongoDatabase,
                         (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",

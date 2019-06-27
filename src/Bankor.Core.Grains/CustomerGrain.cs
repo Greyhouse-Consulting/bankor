@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bancor.Core.Exceptions;
+using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Bancor.Core.Models;
 using Orleans;
@@ -27,10 +28,11 @@ namespace Bancor.Core.Grains
             var accountNames = new List<AccountModel>();
             foreach (var account in State.AccountGrains)
             {
-                accountNames.Add(new AccountModel{
-                   Name = await account.GetName(),
+                accountNames.Add(new AccountModel
+                {
+                    Name = await account.Name(),
                     Id = account.GetPrimaryKeyLong(),
-                    Balance = await account.GetBalance()
+                    Balance = await account.Balance()
                 });
             }
 
@@ -42,23 +44,24 @@ namespace Bancor.Core.Grains
         {
             EnsureCreated();
 
-            var item = Math.Abs(Guid.NewGuid().GetHashCode());  
-            var account = GrainFactory.GetGrain<IAccountGrain>(item);
+            //var item = Math.Abs(Guid.NewGuid().GetHashCode());
+            var accountId = Guid.NewGuid();
+            var account = GrainFactory.GetGrain<IJournaledAccountGrain>(accountId);
 
-            await account.HasNewName(name);
+            await account.HasName(name);
             State.AccountGrains.Add(account);
 
-            await NotifyNewAccount(item);
+            await NotifyNewAccount(accountId.ToString());
 
             await WriteStateAsync();
 
         }
 
-        private async Task NotifyNewAccount(int item)
+        private async Task NotifyNewAccount(string accountId)
         {
             var streamProvider = GetStreamProvider("SMSProvider");
-            var stream = streamProvider.GetStream<int>(StreamIdGenerator.StreamId, "ACCOUNTID");
-            await stream.OnNextAsync(item);
+            var stream = streamProvider.GetStream<string>(StreamIdGenerator.StreamId, "ACCOUNTID");
+            await stream.OnNextAsync(accountId);
         }
 
         public async Task TryInit(string name)
