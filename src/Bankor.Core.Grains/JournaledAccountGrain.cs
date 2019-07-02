@@ -25,27 +25,27 @@ namespace Bancor.Core.Grains
             _journaldAccountRepository = journaldAccountRepository;
         }
 
-        public Task Deposit(decimal amount)
+        public Task Deposit(decimal amount, string description)
         {
             EnsureCreated();
 
-            RaiseEvent(new DepositEvent(amount));
+            RaiseEvent(new DepositEvent(amount, description));
 
             return ConfirmEvents();
         }
 
-        public Task Withdraw(decimal amount)
+        public Task Withdraw(decimal amount, string description)
         {
             EnsureCreated();
 
-            RaiseEvent(new WithdrawEvent(amount));
+            RaiseEvent(new WithdrawEvent(amount, description));
 
             return ConfirmEvents();
         }
 
         public Task HasNewName(string name)
         {
-            RaiseEvent(new AccountNameEvent(name));
+            RaiseEvent(new AccountNameEvent(name, name));
 
             return ConfirmEvents();
         }
@@ -59,7 +59,7 @@ namespace Bancor.Core.Grains
 
         public Task HasName(string name)
         {
-            RaiseEvent(new AccountNameEvent(name));
+            RaiseEvent(new AccountNameEvent(name, name));
 
             return ConfirmEvents();
         }
@@ -71,7 +71,7 @@ namespace Bancor.Core.Grains
 
         public Task AddTransaction(Transaction transaction)
         {
-            RaiseEvent(new NewTransactionEvent(transaction.Amount, transaction.BookingDate));
+            RaiseEvent(new NewTransactionEvent(transaction.Amount, transaction.BookingDate, transaction.Description));
 
             return Task.CompletedTask;
             

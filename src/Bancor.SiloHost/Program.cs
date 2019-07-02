@@ -2,12 +2,14 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Bancor.Core.Events.Account;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Infrastructure;
 using Bancor.Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Orleans;
 using Orleans.Configuration;
@@ -75,8 +77,15 @@ namespace Bancor.SiloHost
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
 
-        IMongoDatabase database;
             var siloHostBuilder = new SiloHostBuilder();
+
+            BsonClassMap.RegisterClassMap<AccountEvent>(cm =>
+            {
+                cm.AutoMap();
+                cm.SetDiscriminator("AccountEvent");
+            });
+
+            IMongoDatabase database;
 
             switch (EnvironmentName)
             {
@@ -84,13 +93,13 @@ namespace Bancor.SiloHost
                     siloHostBuilder
                         .UseConsulClustering(options => { options.Address = new Uri("http://consul:8500"); })
                         .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000);
-                    database = new MongoDbInmemoryFactory().Create();
+                    database = new MongoDbFactory().Create();
                     break;
                 case "Development":
                     siloHostBuilder
                         .UseLocalhostClustering()
                         .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback);
-                    database = new MongoDbInmemoryFactory().Create();
+                    database = new MongoDbFactory().Create();
                     break;
                 default:
                     throw new Exception($"Unknown environment '{EnvironmentName}'");
@@ -105,7 +114,7 @@ namespace Bancor.SiloHost
             .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, MongoCustomerStorageProvider>())
             .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
             .ConfigureServices(s => s.TryAddSingleton(database))
-            .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
+            .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepository>())
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
                     (x, y) => new MongoCustomerStorageProvider(database,

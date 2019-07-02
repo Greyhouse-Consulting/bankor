@@ -16,8 +16,8 @@ namespace Bancor.Integration.Tests
             var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(accountId);
 
             // Act
-            await grain.Deposit(200);
-            await grain.Deposit(200);
+            await grain.Deposit(200, "deposit");
+            await grain.Deposit(200, "deposit");
 
             // Assert
             (await grain.Balance()).ShouldBe(500);
@@ -34,9 +34,9 @@ namespace Bancor.Integration.Tests
 
             // Act
             await grain.HasName("Savings account");
-            await grain.Deposit(200);
-            await grain.Deposit(200);
-            await grain.Withdraw(400);
+            await grain.Deposit(200, "deposit");
+            await grain.Deposit(200, "deposit");
+            await grain.Withdraw(400, "deposit");
                 
             // Assert
             (await grain.Balance()).ShouldBe(0);

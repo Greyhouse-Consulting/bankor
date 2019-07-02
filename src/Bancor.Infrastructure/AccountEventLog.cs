@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Bancor.Infrastructure
 {
+
     public class AccountEventLog
     {
         [BsonId]

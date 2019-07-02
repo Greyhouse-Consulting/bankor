@@ -6,6 +6,8 @@ using Bancor.Core;
 using Bancor.Core.Grains;
 using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
+using Bancor.Infrastructure.MongoEntites;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Orleans;
 using Orleans.Providers;
@@ -33,15 +35,15 @@ namespace Bancor.Infrastructure
                 if(state == null)
                     throw new Exception("Invalid state in MongoCustomerStorageProvider::ReadStateAsync");
 
-                var customer = (await _database.GetCollection<Customer>("Customers")
+                var customer = (await _database.GetCollection<MongoCustomer>("Customers")
                     .FindAsync(a => a.Id == grainReference.GetPrimaryKey())).FirstOrDefault();
 
                 if (customer != null)
                 {
-                    state.Name = customer.Name;
+                    state.Name = customer.Customer.Name;
                     state.Created = true;
 
-                    foreach (var customerAccountId in customer.AccountsIds)
+                    foreach (var customerAccountId in customer.Customer.AccountsIds)
                     {
                         state.AccountGrains.Add(_grainFactory.GetGrain<IJournaledAccountGrain>(customerAccountId));
                     }
@@ -54,7 +56,7 @@ namespace Bancor.Infrastructure
 
             if (grainType == typeof(CustomerGrain).FullName)
             {
-                var customerCollection = _database.GetCollection<Customer>("Customers");
+                var customerCollection = _database.GetCollection<MongoCustomer>("Customers");
                 var customer = (await customerCollection
                     .FindAsync(a => a.Id == grainReference.GetPrimaryKey())).FirstOrDefault();
 
@@ -62,19 +64,25 @@ namespace Bancor.Infrastructure
                 if(state == null)
                     throw new Exception("Invalid state in MongoCustomerStorageProvider::WriteStateAsync");
 
-                var customerAccounts = customer?.AccountsIds ?? new List<Guid>();
+                var customerAccounts = customer?.Customer?.AccountsIds ?? new List<Guid>();
                 var newAccounts = state.AccountGrains.Select(a => a.GetPrimaryKey()).Except(customerAccounts);
                 var removedAccounts = customerAccounts.Except(state.AccountGrains.Select(a => a.GetPrimaryKey()));
 
 
                 if (customer == null)
                 {
-                    await customerCollection.InsertOneAsync(new Customer
-                    {
-                        Id =  Guid.NewGuid(),
-                        Name = state.Name,
-                        AccountsIds = state.AccountGrains.Select(a => a.GetPrimaryKey()).ToArray()
-                    });
+                    var customerId = Guid.NewGuid();
+                    await customerCollection.InsertOneAsync(
+                        new MongoCustomer
+                        {
+                            Id = customerId,
+                            Customer = new Customer
+                            {
+                                Id =  customerId,
+                                Name = state.Name,
+                                AccountsIds = state.AccountGrains.Select(a => a.GetPrimaryKey()).ToArray()
+                            }
+                        });
 
                     state.Created = true;
                 }
@@ -83,12 +91,12 @@ namespace Bancor.Infrastructure
 
                     foreach (var removedAccount in removedAccounts)
                     {
-                        customer.AccountsIds.RemoveAt(customer.AccountsIds.IndexOf(removedAccount));
+                        customer.Customer.AccountsIds.RemoveAt(customer.Customer.AccountsIds.IndexOf(removedAccount));
                     }
 
                     foreach (var newAccount in newAccounts)
                     {
-                        customer.AccountsIds.Add(newAccount);
+                        customer.Customer.AccountsIds.Add(newAccount);
                     }
 
                     await customerCollection.FindOneAndReplaceAsync(c => c.Id == customer.Id, customer);

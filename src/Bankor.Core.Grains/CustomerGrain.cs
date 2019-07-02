@@ -73,7 +73,7 @@ namespace Bancor.Core.Grains
         private void EnsureCreated()
         {
             if (!State.Created)
-                throw new GrainDoesNotExistException($"Customer with id '{this.GetPrimaryKeyLong()}' does not exist");
+                throw new GrainDoesNotExistException($"Customer with id '{this.GetPrimaryKey()}' does not exist");
         }
     }
 }

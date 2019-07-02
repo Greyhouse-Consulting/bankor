@@ -4,7 +4,7 @@
     {
         public decimal Amount { get; protected set; }
 
-        public DepositEvent(decimal amount)
+        public DepositEvent(decimal amount, string description) : base(description)
         {
             Amount = amount;
         }
@@ -14,7 +14,7 @@
     {
         public string Name { get; set; }
 
-        public AccountNameEvent(string name)
+        public AccountNameEvent(string name, string description) : base(description)
         {
             Name = name;
         }

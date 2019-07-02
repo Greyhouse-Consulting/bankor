@@ -24,7 +24,6 @@ namespace Bancor.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(Guid customerId)
         {
-            //var customers = _clusterClient.GetGrain<IJournaledAccountGrain>(Guid.Parse("EBD09F9C-4A99-4B8D-A581-3C93764D24B1"));
             var customer = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
             return Ok((await customer.GetAccounts()).Select(a => a.Id));
@@ -44,8 +43,6 @@ namespace Bancor.Api.Controllers
                 Log.Warning(e, "Customer {grainId} does not exists", customerId);
                 return NotFound(customerId);
             }
-
-            return Ok();
         }
 
         [HttpPost("{accountId}/transactions")]
@@ -56,7 +53,8 @@ namespace Bancor.Api.Controllers
             await account.AddTransaction(new Transaction
             {
                 Amount = transaction.Amount,
-                BookingDate = transaction.BookingDate
+                BookingDate = transaction.BookingDate,
+                Description = transaction.Description
             });
 
             return Ok();
@@ -67,6 +65,7 @@ namespace Bancor.Api.Controllers
     {
         public decimal Amount { get; set; }
         public DateTime BookingDate { get; set; }
+        public string Description { get; set; }
     }
 
     public class CreateAccountRequest

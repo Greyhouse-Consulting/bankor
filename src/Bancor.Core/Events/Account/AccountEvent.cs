@@ -1,16 +1,22 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Bancor.Core.Events.Account
 {
-    public class AccountEvent
+
+    public abstract class AccountEvent
     {
         public Guid Id { get; set; }
-        public AccountEvent()
+        public DateTime Created { get; set;}
+
+        public string Description { get; set; }
+
+        protected AccountEvent(string description)
         {
             Created = DateTime.Now;
             Id = Guid.NewGuid();
+            Description = description;
         }
-        public DateTime Created { get; set;}
 
     }
 }

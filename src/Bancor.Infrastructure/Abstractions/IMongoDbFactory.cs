@@ -4,6 +4,6 @@ namespace Bancor.Infrastructure.Abstractions
 {
     public interface IMongoDbFactory
     {
-        IMongoDatabase Create();
+        IMongoDatabase Create(string connectionString);
     }
 }

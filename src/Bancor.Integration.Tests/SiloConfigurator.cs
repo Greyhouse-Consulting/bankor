@@ -25,7 +25,7 @@ namespace Bancor.Integration.Tests
             //    .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, MongoCustomerStorageProvider>())
             //    .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
             //    .ConfigureServices(s => s.TryAddSingleton<IDatabase>(Db))
-            //    .ConfigureServices(s => s.TryAddSingleton<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
+            //    .ConfigureServices(s => s.TryAddSingleton<IJournaldAccountRepository, JournalAccountRepository>())
             //    .ConfigureServices(s => s.TryAddSingleton<IMongoDbFactory, MongoDbInmemoryFactory>())
             //    .ConfigureServices(s => s.AddSingleton(x => x.GetService<IMongoDbFactory>().Create()))
             //    .ConfigureServices(s =>
