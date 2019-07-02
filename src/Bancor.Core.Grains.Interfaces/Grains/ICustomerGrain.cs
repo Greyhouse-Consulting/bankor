@@ -4,7 +4,7 @@ using Orleans;
 
 namespace Bancor.Core.Grains.Interfaces.Grains
 {
-    public interface ICustomerGrain : IGrainWithIntegerKey
+    public interface ICustomerGrain : IGrainWithGuidKey
     {
         Task HasNewName(string name);
         Task<IList<Models.AccountModel>> GetAccounts();

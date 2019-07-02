@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces;
@@ -19,19 +20,15 @@ namespace Bancor.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(int customerId)
+        public async Task<IActionResult> Get(Guid customerId)
         {
+            var customers = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
-            var customers = _clusterClient.GetGrain<IJournaledAccountGrain>(Guid.Parse("EBD09F9C-4A99-4B8D-A581-3C93764D24B1"));
-           // var customers = _clusterClient.GetGrain<ICustomerGrain>(customerId);
-
-            await customers.Deposit(2000);
-
-            return Ok();
+            return Ok((await customers.GetAccounts()).Select(a => new { a.Id, a.Name}));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(int customerId, [FromBody]CreateAccountRequest request)
+        public async Task<IActionResult> Post(Guid customerId, [FromBody]CreateAccountRequest request)
         {
             var customer = _clusterClient.GetGrain<ICustomerGrain>(customerId);
 
@@ -46,6 +43,20 @@ namespace Bancor.Api.Controllers
 
             return Ok();
         }
+
+        [HttpPost("/{accountId}")]
+        public async Task<IActionResult> Post(Guid customerId, Guid accountId, TransactionModel transaction)
+        {
+            var account = _clusterClient.GetGrain<IJournaledAccountGrain>(accountId);
+
+            return Ok();
+        }
+    }
+
+    public class TransactionModel
+    {
+        public decimal Amount { get; set; }
+        public DateTime BookingDate { get; set; }
     }
 
     public class CreateAccountRequest

@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Configuration;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Bancor.Core.Grains;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Infrastructure;
-using Bancor.Infrastructure.Abstractions;
 using Bancor.Infrastructure.Repository;
-using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using NPoco;
 using Orleans;
 using Orleans.Configuration;
-using Orleans.EventSourcing.CustomStorage;
 using Orleans.Hosting;
 using Orleans.Runtime;
 using Orleans.Storage;
@@ -26,8 +20,8 @@ namespace Bancor.SiloHost
     public class Program
     {
 
-        private static readonly AutoResetEvent closing = new AutoResetEvent(false);
-        private static ISiloHost silo;
+        private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
+        private static ISiloHost _silo;
 
         public static IConfigurationRoot Configuration { get; private set; }
         public static string EnvironmentName { get; private set; }
@@ -48,7 +42,7 @@ namespace Bancor.SiloHost
                     BankorDbFactory.Upgrade(BankorDbFactory.DatabaseName);
                 }
 
-                silo = ConfigureSilo();
+                _silo = ConfigureSilo();
 
                 Task.Run(StartSilo);
 
@@ -58,7 +52,7 @@ namespace Bancor.SiloHost
                     Task.Run(StopSilo);
                 };
 
-                closing.WaitOne();
+                Closing.WaitOne();
             }
             catch (Exception ex)
             {
@@ -68,9 +62,9 @@ namespace Bancor.SiloHost
 
         private static async Task StopSilo()
         {
-            await silo.StopAsync();
+            await _silo.StopAsync();
             Console.WriteLine("Silo stopped");
-            closing.Set();
+            Closing.Set();
         }
 
         private static ISiloHost ConfigureSilo()
@@ -81,8 +75,7 @@ namespace Bancor.SiloHost
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
 
-            IDatabase db;
-
+        IMongoDatabase database;
             var siloHostBuilder = new SiloHostBuilder();
 
             switch (EnvironmentName)
@@ -91,20 +84,18 @@ namespace Bancor.SiloHost
                     siloHostBuilder
                         .UseConsulClustering(options => { options.Address = new Uri("http://consul:8500"); })
                         .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000);
-                    db = SqlServerDatabaseFactory.Create();
+                    database = new MongoDbInmemoryFactory().Create();
                     break;
                 case "Development":
                     siloHostBuilder
                         .UseLocalhostClustering()
                         .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback);
-                    db = BankorDbFactory.Create(BankorDbFactory.DatabaseName);
+                    database = new MongoDbInmemoryFactory().Create();
                     break;
                 default:
                     throw new Exception($"Unknown environment '{EnvironmentName}'");
             }
 
-
-            var inmemoryMongoDatabase = new MongoDbInmemoryFactory().Create();
 
             siloHostBuilder.Configure<ClusterOptions>(options =>
             {
@@ -113,16 +104,12 @@ namespace Bancor.SiloHost
             })
             .ConfigureServices(s => s.TryAddSingleton<IGrainStorage, MongoCustomerStorageProvider>())
             .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
-            .ConfigureServices(s => s.TryAddSingleton(db))
-            .ConfigureServices(s => s.TryAddSingleton(inmemoryMongoDatabase))
+            .ConfigureServices(s => s.TryAddSingleton(database))
             .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepositoryInMemory>())
             .ConfigureServices(s =>
                 s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                    (x, y) => new MongoCustomerStorageProvider(inmemoryMongoDatabase,
+                    (x, y) => new MongoCustomerStorageProvider(database,
                         (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
-            .ConfigureServices(s =>
-                s.AddSingletonNamedService<IGrainStorage>("AccountsStorageProvider",
-                    (x, y) => new AccountsStorageProvider(db)))
             .ConfigureLogging(logging => logging.AddConsole())
             .AddMemoryGrainStorageAsDefault()
             .AddSimpleMessageStreamProvider("SMSProvider")
@@ -138,7 +125,7 @@ namespace Bancor.SiloHost
 
         private static async Task StartSilo()
         {
-            await silo.StartAsync();
+            await _silo.StartAsync();
             Console.WriteLine("Silo started");
         }
     }
