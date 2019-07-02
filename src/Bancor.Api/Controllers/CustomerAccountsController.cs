@@ -6,6 +6,7 @@ using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
+using Serilog;
 
 namespace Bancor.Api.Controllers
 {
@@ -39,6 +40,7 @@ namespace Bancor.Api.Controllers
             }
             catch (GrainDoesNotExistException e)
             {
+                Log.Warning(e, "Customer {grainId} does not exists", customerId);
                 return NotFound(customerId);
             }
 
