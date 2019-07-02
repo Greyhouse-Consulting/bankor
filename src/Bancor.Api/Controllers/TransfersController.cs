@@ -6,7 +6,7 @@ using Orleans;
 namespace Bancor.Api.Controllers
 {
 
-    [Route("api/transfers")]
+    [Route("transfers")]
     //[Route("api/customers/{customerId}/accounts")]
     public class TransfersController : Controller
     {

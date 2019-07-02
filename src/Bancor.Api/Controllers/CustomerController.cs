@@ -6,7 +6,7 @@ using Orleans;
 
 namespace Bancor.Api.Controllers
 {
-    [Route("api/customers")]
+    [Route("customers")]
     public class CustomerController : Controller
     {
         private readonly IClusterClient _clusterClient;

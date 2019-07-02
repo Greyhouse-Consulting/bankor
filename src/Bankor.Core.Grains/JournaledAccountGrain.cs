@@ -69,6 +69,14 @@ namespace Bancor.Core.Grains
             return Task.FromResult(State.Name);
         }
 
+        public Task AddTransaction(Transaction transaction)
+        {
+            RaiseEvent(new NewTransactionEvent(transaction.Amount, transaction.BookingDate));
+
+            return Task.CompletedTask;
+            
+        }
+
         private void EnsureCreated()
         {
             if (!State.Created)

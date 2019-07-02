@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Bancor.Core;
 using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
@@ -47,10 +48,16 @@ namespace Bancor.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("/{accountId}")]
+        [HttpPost("{accountId}/transactions")]
         public async Task<IActionResult> Post(Guid customerId, Guid accountId, TransactionModel transaction)
         {
             var account = _clusterClient.GetGrain<IJournaledAccountGrain>(accountId);
+            
+            await account.AddTransaction(new Transaction
+            {
+                Amount = transaction.Amount,
+                BookingDate = transaction.BookingDate
+            });
 
             return Ok();
         }

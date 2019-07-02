@@ -66,7 +66,23 @@ namespace Bancor.Core.States.Account
             if (@event is AccountNameEvent accountNameEvent)
                 return Apply(accountNameEvent);
 
+            if (@event is NewTransactionEvent newTransactionEvent)
+                return Apply(newTransactionEvent);
+
             throw new Exception("Unhandled account event");
+        }
+
+        public JournaledAccountGrainState Apply(NewTransactionEvent @event)
+        {
+            Balance -= @event.Amount;
+            
+            _transactions.Add(new Transaction
+            {
+                Amount = @event.Amount,
+                BookingDate = @event.BookingDate
+            });
+
+            return this;
         }
     }
 

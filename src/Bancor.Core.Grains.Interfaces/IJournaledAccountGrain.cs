@@ -11,5 +11,6 @@ namespace Bancor.Core.Grains.Interfaces
 
         Task HasName(string name);
         Task<string> Name();
+        Task AddTransaction(Transaction transaction);
     }
 }
