@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Bancor.Infrastructure;
+﻿using System.Threading.Tasks;
 using Orleans.TestingHost;
 
 namespace Bancor.Integration.Tests
@@ -11,11 +9,6 @@ namespace Bancor.Integration.Tests
 
         public async Task DeployClusterAsync()
         {
-            var dbName = Guid.NewGuid().ToString();
-            var db = BankorDbFactory.Create(dbName);
-            BankorDbFactory.Upgrade(dbName);
-            SiloConfigurator.Db = db;
-
             var builder = new TestClusterBuilder(1);
 
             builder.AddSiloBuilderConfigurator<SiloConfigurator>();

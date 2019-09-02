@@ -1,4 +1,6 @@
-﻿using Bancor.Core;
+﻿using System;
+using Bancor.Core;
+using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
 using Orleans.Transactions;
 using Shouldly;
@@ -31,10 +33,10 @@ namespace Bancor.Integration.Tests
             // Arrange
             await DeployClusterAsync();
 
-            var grain = TestCluster.GrainFactory.GetGrain<IAccountGrain>(2000);
+            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(Guid.NewGuid());
 
             // Act Assert
-            grain.GetBalance().ShouldThrow<OrleansTransactionAbortedException>();
+            grain.Balance().ShouldThrow<OrleansTransactionAbortedException>();
         }
 
         [Fact]
@@ -43,13 +45,13 @@ namespace Bancor.Integration.Tests
             // Arrange
             await DeployClusterAsync();
 
-            var grain = TestCluster.GrainFactory.GetGrain<IAccountGrain>(2000);
+            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(Guid.NewGuid());
 
             // Act
-            await grain.HasNewName("Savings account");
-            await grain.Deposit(200, "The transfer", TransactionType.Default);
+            await grain.HasName("Savings account");
+            await grain.Deposit(200, "The transfer");
 
-            var balance = await grain.GetBalance();
+            var balance = await grain.Balance();
             // Assert
             balance.ShouldBe(200);
         }
