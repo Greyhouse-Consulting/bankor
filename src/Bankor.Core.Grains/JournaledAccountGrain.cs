@@ -80,7 +80,7 @@ namespace Bancor.Core.Grains
         private void EnsureCreated()
         {
             if (!State.Created)
-                throw new GrainDoesNotExistException($"Customer with id '{this.GetPrimaryKeyLong()}' does not exist");
+                throw new GrainDoesNotExistException($"Account with id '{this.GetPrimaryKey()}' does not exist");
         }
 
         public async Task<KeyValuePair<int, JournaledAccountGrainState>> ReadStateFromStorage()

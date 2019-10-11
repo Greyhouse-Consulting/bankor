@@ -1,26 +1,36 @@
 ﻿using System;
 using Bancor.Core;
+using Bancor.Core.Exceptions;
 using Bancor.Core.Grains.Interfaces;
 using Bancor.Core.Grains.Interfaces.Grains;
+using Grains.Tests.Hosted.Cluster;
+using Orleans.TestingHost;
 using Orleans.Transactions;
 using Shouldly;
 using Xunit;
 
 namespace Bancor.Integration.Tests
 {
-    public class AccountGrainTests : GrainTest
+
+    [Collection(nameof(ClusterCollection))]
+    public class AccountGrainTests : GrainTest, IClassFixture<ClusterFixture>
     {
+        private readonly TestCluster  _cluster;
+
+        public AccountGrainTests(ClusterFixture fixture)
+        {
+            _cluster = fixture.Cluster;
+        }
+
         [Fact]
         public async void Should_Store_One_Account()
         {
             // Arrange
-            await DeployClusterAsync();
-
-            var grain = TestCluster.GrainFactory.GetGrain<IAccountGrain>(2000);
+            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(Guid.NewGuid());
 
             // Act
-            await grain.HasNewName("Savings account");
-            var name = await grain.GetName();
+            await grain.HasName("Savings account");
+            var name = await grain.Name();
 
             // Assert
             name.ShouldBe("Savings account");
@@ -31,21 +41,17 @@ namespace Bancor.Integration.Tests
         public async void Should_Throw_If_No_Name_Has_Been_Set()
         {
             // Arrange
-            await DeployClusterAsync();
-
             var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(Guid.NewGuid());
 
             // Act Assert
-            grain.Balance().ShouldThrow<OrleansTransactionAbortedException>();
+            grain.Balance().ShouldThrow<GrainDoesNotExistException>();
         }
 
         [Fact]
         public async void Should_Make_One_Transaction()
         {
             // Arrange
-            await DeployClusterAsync();
-
-            var grain = TestCluster.GrainFactory.GetGrain<IJournaledAccountGrain>(Guid.NewGuid());
+            var grain = _cluster.GrainFactory.GetGrain<IJournaledAccountGrain>(Guid.NewGuid());
 
             // Act
             await grain.HasName("Savings account");

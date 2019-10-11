@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Infrastructure;
 using Bancor.Infrastructure.Abstractions;
@@ -30,15 +31,20 @@ namespace Bancor.Integration.Tests
                 .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
                 .ConfigureServices(s => s.TryAddSingleton(database))
                 .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepository>())
-                .ConfigureServices(s =>
-                    s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                        (x, y) => new MongoCustomerStorageProvider(database,
-                            (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
+                //    .ConfigureServices(s =>
+                //        s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
+                //            (x, y) => new MongoCustomerStorageProvider(database,
+                //                (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
                 .AddMemoryGrainStorageAsDefault()
-                //.AddSimpleMessageStreamProvider("SMSProvider")
+                //    //.AddSimpleMessageStreamProvider("SMSProvider")
                 //.AddMemoryGrainStorage("PubSubStore")
-                .AddCustomStorageBasedLogConsistencyProvider("CustomStorage")
+                .AddLogStorageBasedLogConsistencyProvider("CustomStorage")
+                .AddMemoryGrainStorageAsDefault()
+                //.UseLocalhostClustering()
                 .UseTransactions();
+
+
+
         }
     }
 }

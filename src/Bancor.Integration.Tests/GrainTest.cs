@@ -1,13 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Grains.Tests.Hosted.Cluster;
 using Orleans.TestingHost;
+using Xunit;
 
 namespace Bancor.Integration.Tests
 {
-    public class GrainTest
+    public class GrainTest : IDisposable
     {
-        protected TestCluster TestCluster { get; set; }
 
-        public async Task DeployClusterAsync()
+        public GrainTest()
         {
             var builder = new TestClusterBuilder(1);
 
@@ -15,7 +17,15 @@ namespace Bancor.Integration.Tests
 
             TestCluster = builder.Build();
 
-            await TestCluster.DeployAsync();
+            TestCluster.Deploy();
+
+        }
+        protected TestCluster TestCluster { get; set; }
+
+        public void Dispose()
+        {
+            TestCluster.StopAllSilos();
         }
     }
+
 }
