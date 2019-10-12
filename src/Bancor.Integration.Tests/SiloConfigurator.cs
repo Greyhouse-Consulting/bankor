@@ -20,10 +20,11 @@ namespace Bancor.Integration.Tests
 {
     public class SiloConfigurator : ISiloBuilderConfigurator
     {
+        public static MongoDbRunner Runner { get; set; }
         public void Configure(ISiloHostBuilder hostBuilder)
         {
-            var runner = MongoDbRunner.Start();
-            var client = new MongoClient(runner.ConnectionString);
+            Runner = MongoDbRunner.Start();
+            var client = new MongoClient(Runner.ConnectionString);
             var database = client.GetDatabase("test");
 
             hostBuilder
@@ -31,20 +32,10 @@ namespace Bancor.Integration.Tests
                 .ConfigureServices(s => s.TryAddTransient<ICustomerRepository, CustomerRepository>())
                 .ConfigureServices(s => s.TryAddSingleton(database))
                 .ConfigureServices(s => s.TryAddTransient<IJournaldAccountRepository, JournalAccountRepository>())
-                //    .ConfigureServices(s =>
-                //        s.AddSingletonNamedService<IGrainStorage>("CustomerStorageProvider",
-                //            (x, y) => new MongoCustomerStorageProvider(database,
-                //                (IGrainFactory)x.GetService(typeof(IGrainFactory)))))
-                .AddMemoryGrainStorageAsDefault()
-                //    //.AddSimpleMessageStreamProvider("SMSProvider")
-                //.AddMemoryGrainStorage("PubSubStore")
                 .AddLogStorageBasedLogConsistencyProvider("CustomStorage")
                 .AddMemoryGrainStorageAsDefault()
                 //.UseLocalhostClustering()
                 .UseTransactions();
-
-
-
         }
     }
 }

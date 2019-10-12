@@ -10,7 +10,7 @@ namespace Bancor.Infrastructure
 {
     public class MongoDbFactory : IMongoDbFactory
     {
-        public IMongoDatabase Create(string connectionString = "mongodb://localhost:27017")
+        public IMongoDatabase Create(string connectionString = "mongodb://db:27017")
         {
 
 

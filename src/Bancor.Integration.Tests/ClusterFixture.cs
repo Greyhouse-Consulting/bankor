@@ -99,8 +99,8 @@ namespace Grains.Tests.Hosted.Cluster
             // at this time, configurators cannot take injected parameters
             // therefore we must other means of sharing objects as you can see above
             builder.AddSiloBuilderConfigurator<SiloConfigurator>();
-
             Cluster = builder.Build();
+
             Cluster.Deploy();
         }
 

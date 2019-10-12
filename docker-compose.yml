@@ -25,14 +25,11 @@ services:
       environment:
         - ASPNETCORE_ENVIRONMENT=Integration
     db:
-      image: "microsoft/mssql-server-linux:2017-latest"
-      environment:
-          SA_PASSWORD: "MyPassword001"
-          ACCEPT_EULA: "Y"
-      ports:
-        - "1433:1433"
+      image: "mongo"
       networks: 
         - "bancor-net"
+      ports:
+          - "27017:27017"        
     consul:
       image: consul:latest
       networks:

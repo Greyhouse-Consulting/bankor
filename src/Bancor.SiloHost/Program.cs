@@ -33,16 +33,16 @@ namespace Bancor.SiloHost
             try
             {
 
-                EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                //EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-                if (EnvironmentName == "Integration")
-                {
-                    SqlServerDatabaseFactory.Upgrade();
-                }
-                else if (EnvironmentName == "Development")
-                {
-                    BankorDbFactory.Upgrade(BankorDbFactory.DatabaseName);
-                }
+                //if (EnvironmentName == "Integration")
+                //{
+                //    SqlServerDatabaseFactory.Upgrade();
+                //}
+                //else if (EnvironmentName == "Development")
+                //{
+                //    BankorDbFactory.Upgrade(BankorDbFactory.DatabaseName);
+                //}
 
                 _silo = ConfigureSilo();
 
