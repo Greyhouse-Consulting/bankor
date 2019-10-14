@@ -33,7 +33,7 @@ namespace Bancor.SiloHost
             try
             {
 
-                //EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
                 //if (EnvironmentName == "Integration")
                 //{
@@ -86,6 +86,13 @@ namespace Bancor.SiloHost
             });
 
             IMongoDatabase database;
+
+
+            siloHostBuilder.Configure<ClusterOptions>(options =>
+            {
+                options.ClusterId = "dev";
+                options.ServiceId = "bancor-silohost";
+            });
 
             switch (EnvironmentName)
             {

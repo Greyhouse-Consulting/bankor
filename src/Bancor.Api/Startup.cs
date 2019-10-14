@@ -32,11 +32,10 @@ namespace Bancor.Api
         {
             services.AddMvc();
             var builder = new ClientBuilder()
-                .UseConsulClustering(options => { options.Address = new Uri("http://consul:8500", UriKind.Absolute); })
                 .Configure<ClusterOptions>(options =>
                 {
                     options.ClusterId = "dev";
-                    options.ServiceId = "bancor";
+                    options.ServiceId = "bancor-api";
                 })
                 .ConfigureLogging(logging => logging.AddConsole());
 
@@ -44,7 +43,7 @@ namespace Bancor.Api
             {
                 builder.UseConsulClustering(options =>
                 {
-                    options.Address = new Uri("http://consul:8500", UriKind.Absolute);
+                    options.Address = new Uri("http://consul:8500");
                 });
             }
             else if(_hostingEnvironment.IsDevelopment())

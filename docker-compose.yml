@@ -29,12 +29,11 @@ services:
       networks: 
         - "bancor-net"
       ports:
-          - "27017:27017"        
+          - "27055:27055"        
     consul:
       image: consul:latest
       networks:
         - "bancor-net"
-      command: consul agent -dev -client 0.0.0.0
-
+      command: consul agent -server -bootstrap -dev -client 0.0.0.0
 networks:
   bancor-net:
