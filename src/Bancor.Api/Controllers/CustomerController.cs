@@ -30,7 +30,17 @@ namespace Bancor.Api.Controllers
             return Ok(customer.GetPrimaryKey());
         }
 
-        // GET
+
+        // GET /customers/
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var customerManager = _clusterClient.GetGrain<ICustomerManagerGrain>(0);
+
+            return Ok(await customerManager.GetAll());
+        }
+
+        // GET /customers/{id}
         [HttpGet("{id}")]
         public IActionResult Get(Guid id)
         {

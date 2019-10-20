@@ -106,7 +106,7 @@ namespace Bancor.SiloHost
                     siloHostBuilder
                         .UseLocalhostClustering()
                         .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback);
-                    database = new MongoDbFactory().Create();
+                    database = new MongoDbFactory().Create("mongodb://localhost:27017");
                     break;
                 default:
                     throw new Exception($"Unknown environment '{EnvironmentName}'");

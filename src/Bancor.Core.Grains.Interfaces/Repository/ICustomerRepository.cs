@@ -7,5 +7,6 @@ namespace Bancor.Core.Grains.Interfaces.Repository
     {
         Task<Guid> Insert(Customer name);
         Task<Customer> Get(int id);
+        Task<Customer[]> Get();
     }
 }

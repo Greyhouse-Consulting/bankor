@@ -6,5 +6,6 @@ namespace Bancor.Core.Grains.Interfaces.Grains
     public interface ICustomerManagerGrain : IGrainWithIntegerKey
     {
         Task<ICustomerGrain> Create(string name);
+        Task<Customer[]> GetAll();
     }
 }
