@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bancor.Core.Events.Account;
 using Bancor.Core.Grains.Interfaces.Repository;
 using Bancor.Core.States.Account;
-using Bancor.Infrastructure.Abstractions;
 using MongoDB.Driver;
 
 namespace Bancor.Infrastructure
@@ -14,6 +12,9 @@ namespace Bancor.Infrastructure
     public class JournalAccountRepository : IJournaldAccountRepository
     {
         private readonly IMongoDatabase _mongoDatabase;
+
+        private IMongoCollection<AccountEventLog> GetAccountEventCollection(Guid accountId) => _mongoDatabase.GetCollection<AccountEventLog>(AccountEventCollectionName(accountId));
+        private string AccountEventCollectionName(Guid accountId) => $"{nameof(AccountEventLog)}-{accountId:N}";
 
         public JournalAccountRepository(IMongoDatabase mongoDatabase)
         {
@@ -31,7 +32,7 @@ namespace Bancor.Infrastructure
                 if(snapshot == null )
                     return new KeyValuePair<int, JournaledAccountGrainState>(0, new JournaledAccountGrainState());
 
-                var ec = _mongoDatabase.GetCollection<AccountEventLog>(nameof(AccountEventLog));
+                var ec = GetAccountEventCollection(accountId);
 
                 var sort = Builders<AccountEventLog>.Sort.Descending("LatestVersion");
 
@@ -60,7 +61,7 @@ namespace Bancor.Infrastructure
         public async Task<bool> ApplyUpdatesToStorage(
             Guid accountId,
             IReadOnlyList<AccountEvent> updates,
-            int expectedversion)
+            int expectedVersion)
         {
 
             try
@@ -74,15 +75,17 @@ namespace Bancor.Infrastructure
                     sc.InsertOne(snapshot);
                 }
 
-                var ec = _mongoDatabase.GetCollection<AccountEventLog>(nameof(AccountEventLog));
+                var ec =  GetAccountEventCollection(accountId);
             
-                var events = (await ec.Find(e => e.AccountId == accountId && e.AccountVersion > snapshot.LatestVersion).ToListAsync())
-                    .OrderByDescending(e => e.AccountVersion)
-                    .Where(e => updates.All(u => u.Id != e.Id));
+                var eventsAfterSnapshot = (await ec.Find(e => e.AccountId == accountId && e.AccountVersion > snapshot.LatestVersion).ToListAsync());
+                
+                var eventsWithNoDuplicates = eventsAfterSnapshot.OrderByDescending(e => e.AccountVersion)
+                    .Where(e => updates.All(u => u.Id != e.Id))
+                    .ToList();
 
-                var latestVersion = events.Any() ? events.Max(e => e.AccountVersion) : snapshot.LatestVersion;
+                var latestVersion = eventsWithNoDuplicates.Any() ? eventsWithNoDuplicates.Max(e => e.AccountVersion) : snapshot.LatestVersion;
 
-                if (latestVersion + updates.Count - 1 != expectedversion)
+                if (latestVersion + updates.Count - 1 != expectedVersion)
                     throw new Exception();
 
                 foreach (var update in updates)
