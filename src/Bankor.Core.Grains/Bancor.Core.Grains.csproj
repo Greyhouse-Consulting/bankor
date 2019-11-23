@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Bancor.Core.Grains.Interfaces\Bancor.Core.Grains.Interfaces.csproj" />
     <ProjectReference Include="..\Bancor.Core\Bancor.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Events\Account\" />
-    <Folder Include="States\Account\" />
-  </ItemGroup>
 </Project>

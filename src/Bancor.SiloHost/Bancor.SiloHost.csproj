@@ -24,11 +24,6 @@
     <ProjectReference Include="..\Bankor.Core.Grains\Bancor.Core.Grains.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration.ConfigurationManager">
-      <HintPath>C:\Users\matsa\.nuget\packages\system.configuration.configurationmanager\4.4.0\ref\netstandard2.0\System.Configuration.ConfigurationManager.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <None Update=".dockerignore">
       <DependentUpon>Dockerfile</DependentUpon>
     </None>

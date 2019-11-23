@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.6" />
+
     <PackageReference Include="Microsoft.Orleans.Core" Version="3.0.0" />
     <PackageReference Include="Microsoft.Orleans.OrleansConsulUtils" Version="3.0.0" />
     <PackageReference Include="Microsoft.Orleans.Transactions" Version="3.0.0" />
