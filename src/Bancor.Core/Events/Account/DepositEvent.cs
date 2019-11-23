@@ -9,14 +9,4 @@
             Amount = amount;
         }
     }
-
-    public class AccountNameEvent : AccountEvent
-    {
-        public string Name { get; set; }
-
-        public AccountNameEvent(string name, string description) : base(description)
-        {
-            Name = name;
-        }
-    }
 }

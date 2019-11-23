@@ -6,7 +6,7 @@ namespace Bancor.Core.Events.Account
 
     public abstract class AccountEvent
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; }
         public DateTime Created { get; set;}
 
         public string Description { get; set; }

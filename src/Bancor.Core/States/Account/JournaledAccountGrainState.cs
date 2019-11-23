@@ -7,6 +7,7 @@ namespace Bancor.Core.States.Account
     public class JournaledAccountGrainState
     {
         private readonly IList<Transaction> _transactions;
+        private readonly IList<Stakeholder> _stakeholderIds;
         public decimal Balance { get; private set; }
 
         public string Name { get; private set; }
@@ -18,6 +19,7 @@ namespace Bancor.Core.States.Account
         public JournaledAccountGrainState()
         {
             _transactions = new List<Transaction>();
+            _stakeholderIds = new List<Stakeholder>();
         }
 
         public JournaledAccountGrainState Apply(DepositEvent @event)
@@ -50,6 +52,16 @@ namespace Bancor.Core.States.Account
             {
                 Amount = @event.Amount,
                 BookingDate = DateTime.Now
+            });
+
+            return this;
+        }
+
+        public JournaledAccountGrainState Apply(NewStakeholderEvent @event)
+        {
+            _stakeholderIds.Add(new Stakeholder{
+                StakeholderId = @event.StakeholderId,
+                TypeOfStakeholder = @event.TypeOfStakeholder
             });
 
             return this;
