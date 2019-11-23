@@ -3,13 +3,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.4.3" />
-    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="2.4.3" />
-    <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="2.4.3" PrivateAssets="all">
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="3.0.0" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Transactions" Version="2.4.3" />
-    <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
+    <PackageReference Include="Microsoft.Orleans.Transactions" Version="3.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.9.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bancor.Core.Grains.Interfaces\Bancor.Core.Grains.Interfaces.csproj" />
