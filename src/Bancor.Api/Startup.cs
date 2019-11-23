@@ -30,7 +30,8 @@ namespace Bancor.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddControllers();
+
             var builder = new ClientBuilder()
                 .Configure<ClusterOptions>(options =>
                 {
@@ -96,7 +97,12 @@ namespace Bancor.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+            });
         }
     }
 }
