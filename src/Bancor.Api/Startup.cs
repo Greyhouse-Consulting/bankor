@@ -32,6 +32,10 @@ namespace Bancor.Api
         {
             services.AddControllers();
 
+            services.AddCors(a => 
+                a.AddPolicy("all", cpb => 
+                    cpb.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
+
             var builder = new ClientBuilder()
                 .Configure<ClusterOptions>(options =>
                 {
@@ -99,6 +103,7 @@ namespace Bancor.Api
 
 
             app.UseRouting();
+            app.UseCors("all");
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

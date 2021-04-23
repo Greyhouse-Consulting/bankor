@@ -82,9 +82,14 @@ namespace Bancor.SiloHost
             BsonClassMap.RegisterClassMap<AccountEvent>(cm =>
             {
                 cm.AutoMap();
-                cm.SetDiscriminator("AccountEvent");
+                cm.SetIsRootClass(true);
             });
 
+            BsonClassMap.RegisterClassMap<AccountNameEvent>();
+            BsonClassMap.RegisterClassMap<DepositEvent>();
+            BsonClassMap.RegisterClassMap<NewStakeholderEvent>();
+            BsonClassMap.RegisterClassMap<NewTransactionEvent>();
+            BsonClassMap.RegisterClassMap<WithdrawEvent>();
             IMongoDatabase database;
 
 
