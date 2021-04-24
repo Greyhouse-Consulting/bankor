@@ -46,7 +46,7 @@ namespace Bancor.Api.Controllers
         }
 
         [HttpPost("{accountId}/transactions")]
-        public async Task<IActionResult> Post(Guid customerId, Guid accountId, TransactionModel transaction)
+        public async Task<IActionResult> Post(Guid accountId, TransactionModel transaction)
         {
             var account = _clusterClient.GetGrain<IJournaledAccountGrain>(accountId);
             
