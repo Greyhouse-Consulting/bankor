@@ -3,7 +3,6 @@ using Bancor.Core.Events.Account;
 using Bancor.Core.States.Account;
 using Bancor.Infrastructure.Abstractions;
 using Mongo2Go;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace Bancor.Infrastructure

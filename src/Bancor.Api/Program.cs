@@ -14,7 +14,7 @@ namespace Bancor.Api
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.ColoredConsole()
+                .WriteTo.Console()
                 .CreateLogger();
 
             try
