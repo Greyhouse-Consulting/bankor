@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.4.2" />
     <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="3.4.2" />
     <PackageReference Include="Microsoft.Orleans.Transactions" Version="3.4.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.12.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bancor.Core.Grains.Interfaces\Bancor.Core.Grains.Interfaces.csproj" />
